@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  client:
+    container_name: websocket_client
+    build:
+      context: .
+      dockerfile: ./apps/client/Dockerfile
+    ports:
+      - '4200:80'
+    env_file:
+      - ./apps/client/.env
+    environment:
+      - NODE_ENV=production
+  server:
+    container_name: websocket_server
+    build:
+      context: .
+      dockerfile: ./apps/server/Dockerfile
+    ports:
+      - '4300:4300'
+    env_file:
+      - ./apps/server/.env
+      - ./apps/server/.env.local
+    environment:
+      - NODE_ENV=production
