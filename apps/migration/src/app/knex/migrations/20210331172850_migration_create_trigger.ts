@@ -82,12 +82,12 @@ declare
   v_channel channel;
   v_setof_channel record;
 begin
-  -- Select all users except the newly created one                                            
+  -- Select all users except the newly created one
   FOR v_member IN (SELECT * FROM member WHERE id != member_id) LOOP
-    -- Create new channel for member      
+    -- Create new channel for member
     INSERT INTO channel DEFAULT VALUES RETURNING * INTO v_channel;
 
-    -- Add members to channel 
+    -- Add members to channel
     IF v_channel IS NOT NULL THEN
       INSERT INTO channel_member(member_id, channel_id) VALUES (member_id, v_channel.id);
       INSERT INTO channel_member(member_id, channel_id) VALUES (v_member.id, v_channel.id);
@@ -136,7 +136,9 @@ begin
   where a.email = $1;
 
   if account.password_hash = crypt(password, account.password_hash) then
-    return ('inqcuhwd', account.member_id, extract(epoch from (now() + interval '2 days')))::jwt_token;
+    RAISE INFO 'jwt_token %', ('${process.env.ROLE}', account.member_id, extract(epoch from (now() + interval '2 days')))::jwt_token;
+
+    return ('${process.env.ROLE}', account.member_id, extract(epoch from (now() + interval '2 days')))::jwt_token;
   else
     return null;
   end if;
@@ -154,16 +156,16 @@ const TYPE_JWT_TOKEN = `create type jwt_token as (
   exp bigint
 );`
 
-const USER_INSERT_TRIGGER = `CREATE TRIGGER graphql_subscription_new_user
-  AFTER INSERT ON member  EXECUTE PROCEDURE graphql_subscription(
-    'newMember',
-    'graphql:member'
-  )`
+// const USER_INSERT_TRIGGER = `CREATE TRIGGER graphql_subscription_new_user
+//   AFTER INSERT ON member  EXECUTE PROCEDURE graphql_subscription(
+//     'newMember',
+//     'graphql:member'
+//   )`
 
-const CHANNEL_INSERT_ON_NEW_USER_TRIGGER = `CREATE TRIGGER channel_insert_on_new_user
-  AFTER INSERT ON member
-  FOR EACH ROW
-  EXECUTE PROCEDURE create_channel()`
+// const CHANNEL_INSERT_ON_NEW_USER_TRIGGER = `CREATE TRIGGER channel_insert_on_new_user
+//   AFTER INSERT ON member
+//   FOR EACH ROW
+//   EXECUTE PROCEDURE create_channel()`
 const TRIGGER_NEW_CHANNEL = `CREATE TRIGGER trigger_new_channel
   AFTER INSERT ON channel_member
   FOR EACH ROW
@@ -174,21 +176,21 @@ const TRIGGER_NEW_MESSAGE = `CREATE TRIGGER trigger_new_message
   AFTER INSERT ON message
   FOR EACH ROW
   EXECUTE PROCEDURE graphql_subscription_new_message();`
-const FUNCTION_HELLO = `create function function_hello(a text) returns trigger as $$
-  declare
-  begin
-    RAISE INFO 'NEW %', NEW;
-    RAISE INFO 'TG_OP %', TG_OP;
-    RAISE INFO 'TG_ARGV %', TG_ARGV[0];
-    RAISE INFO 'a %', a;
-   
-    return NEW;
-  end;
-  $$ language plpgsql volatile set search_path from current`
-const TRIGGER_HELLO = `CREATE TRIGGER trigger_hello
-  AFTER INSERT ON message
-  FOR EACH ROW
-  EXECUTE PROCEDURE function_hello();`
+// const FUNCTION_HELLO = `create function function_hello(a text) returns trigger as $$
+//   declare
+//   begin
+//     RAISE INFO 'NEW %', NEW;
+//     RAISE INFO 'TG_OP %', TG_OP;
+//     RAISE INFO 'TG_ARGV %', TG_ARGV[0];
+//     RAISE INFO 'a %', a;
+
+//     return NEW;
+//   end;
+//   $$ language plpgsql volatile set search_path from current`
+// const TRIGGER_HELLO = `CREATE TRIGGER trigger_hello
+//   AFTER INSERT ON message
+//   FOR EACH ROW
+//   EXECUTE PROCEDURE function_hello();`
 
 const trimTrailingParenthesis = (text: string) => {
   const indexOfOpeningParenthesis = text.indexOf('(')

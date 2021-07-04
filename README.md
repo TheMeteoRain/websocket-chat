@@ -108,3 +108,11 @@ Add another buildpack to enable deploy many applications from one single reposit
     heroku buildpacks:add -a <server_app_name> https://github.com/lstoll/heroku-buildpack-monorepo -i 1
 
     heroku buildpacks:add -a <client_app_name> https://github.com/lstoll/heroku-buildpack-monorepo -i 1
+
+heroku buildpacks:remove mete-websocket-server https://github.com/lstoll/heroku-buildpack-monorepo
+
+### Docker
+
+Purge all things related to project's docker-compose
+
+    docker-compose down -v --rmi all --remove-orphans

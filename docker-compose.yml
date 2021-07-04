@@ -1,8 +1,8 @@
 version: '3.8'
 
 services:
-  client:
-    container_name: websocket_client
+  chat_client:
+    container_name: chat_client
     build:
       context: .
       dockerfile: ./apps/client/Dockerfile
@@ -12,8 +12,10 @@ services:
       - ./apps/client/.env
     environment:
       - NODE_ENV=production
-  server:
-    container_name: websocket_server
+    depends_on:
+      - chat_server
+  chat_server:
+    container_name: chat_server
     build:
       context: .
       dockerfile: ./apps/server/Dockerfile
@@ -21,6 +23,53 @@ services:
       - '4300:4300'
     env_file:
       - ./apps/server/.env
-      - ./apps/server/.env.local
     environment:
-      - NODE_ENV=production
+      - POSTGRAHILE_EXPORT_GQL_SCHEMA_PATH= # No value. Making sure it is empty in docker environment
+      - NODE_ENV=development
+      - POSTGRES_HOST=chat_database
+      - POSTGRES_PORT=5432
+      # wait-for-it environment variables
+      - WAITFORIT_TIMEOUT=5 # Defaul 15
+      #- WAITFORIT_STRICT # Default 0
+      #- WAITFORIT_CHILD # Default 0
+      #- WAITFORIT_QUIET # Default 0
+    depends_on:
+      - chat_database
+    command: ['./wait-for-it.sh', 'chat_database:5432', '--', './entrypoint.sh']
+  chat_database:
+    container_name: chat_database
+    image: postgres:13.3-alpine
+    # build:
+    #   context: .
+    #   dockerfile: ./apps/migration/Dockerfile
+    ports:
+      - '6543:5432'
+    env_file:
+      - ./apps/migration/.env
+  # chat_database_migration:
+  #   container_name: chat_database_migration
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/migration/Dockerfile
+  #   command:
+  #     [
+  #       './wait-for-it.sh',
+  #       'chat_database:5432',
+  #       '--',
+  #       'yarn',
+  #       'knex',
+  #       'migrate:latest',
+  #     ]
+  #   env_file:
+  #     - ./apps/migration/.env
+  #   environment:
+  #     # Overwrite environment variables
+  #     - POSTGRES_HOST=chat_database
+  #     - POSTGRES_PORT=5432
+  #     # wait-for-it environment variables
+  #     - WAITFORIT_TIMEOUT=5 # Defaul 15
+  #     #- WAITFORIT_STRICT # Default 0
+  #     #- WAITFORIT_CHILD # Default 0
+  #     #- WAITFORIT_QUIET # Default 0
+  #   depends_on:
+  #     - chat_database

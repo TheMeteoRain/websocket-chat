@@ -1,6 +1,7 @@
 import postgraphile from '@src/config/postgraphile'
 import express from 'express'
-import http from 'http'
+import dotenv from 'dotenv'
+dotenv.config()
 
 // App setup
 const PORT = process.env.PORT
@@ -25,9 +26,7 @@ app.use(morgan('tiny'))
 app.use(postgraphile)
 /************************************************************/
 
-const httpServer = http.createServer(app)
-
-httpServer.listen(PORT, function () {
+app.listen(PORT, () => {
   console.log(`✨ Listening on port ${PORT}`)
   console.log(`🚀 http://localhost:${PORT}`)
 })

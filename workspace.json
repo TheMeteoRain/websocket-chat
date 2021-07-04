@@ -128,6 +128,12 @@
         "build": {
           "executor": "@nrwl/node:build",
           "outputs": ["{options.outputPath}"],
+          "dependsOn": [
+            {
+              "target": "build",
+              "projects": "dependencies"
+            }
+          ],
           "options": {
             "outputPath": "dist/apps/server",
             "main": "apps/server/src/main.ts",
@@ -187,6 +193,57 @@
           "outputs": ["coverage/libs/types"],
           "options": {
             "jestConfig": "libs/types/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "migration": {
+      "root": "apps/migration",
+      "sourceRoot": "apps/migration/src",
+      "projectType": "application",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/apps/migration",
+            "main": "apps/migration/src/main.ts",
+            "tsConfig": "apps/migration/tsconfig.app.json",
+            "assets": ["apps/migration/src/assets"],
+            "packageJson": "apps/migration/package.prod.json"
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/migration/src/environments/environment.ts",
+                  "with": "apps/migration/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "migration:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["apps/migration/**/*.ts"]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": ["coverage/apps/migration"],
+          "options": {
+            "jestConfig": "apps/migration/jest.config.js",
             "passWithNoTests": true
           }
         }

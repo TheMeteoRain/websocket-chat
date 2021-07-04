@@ -1,13 +1,18 @@
 {
   "implicitDependencies": {
     "workspace.json": "*",
-    "package.json": { "dependencies": "*", "devDependencies": "*" },
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
     "tsconfig.base.json": "*",
     "tslint.json": "*",
     ".eslintrc.json": "*",
     "nx.json": "*"
   },
-  "affected": { "defaultBase": "master" },
+  "affected": {
+    "defaultBase": "master"
+  },
   "npmScope": "mete",
   "tasksRunnerOptions": {
     "default": {
@@ -21,9 +26,22 @@
     }
   },
   "projects": {
-    "client": { "tags": [] },
-    "client-e2e": { "tags": [], "implicitDependencies": ["client"] },
-    "server": { "tags": [] },
-    "types": { "tags": [] }
+    "client": {
+      "tags": ["application"]
+    },
+    "client-e2e": {
+      "tags": [],
+      "implicitDependencies": ["client"]
+    },
+    "server": {
+      "tags": ["application"],
+      "implicitDependencies": ["migration"]
+    },
+    "types": {
+      "tags": ["application"]
+    },
+    "migration": {
+      "tags": ["database"]
+    }
   }
 }
