@@ -27,9 +27,7 @@ const MESSAGE_SUBSCRIPTION = gql`
 
 export type ChannelContainerProps = unknown
 
-export const ChannelContainer: React.FC<ChannelContainerProps> = ({
-  children,
-}) => {
+export const ChannelContainer: React.VFC<ChannelContainerProps> = () => {
   const { params } = useRouteMatch()
   const channelChatWindowRef = React.useRef<HTMLElement>(null)
   const {
@@ -107,7 +105,9 @@ export const ChannelContainer: React.FC<ChannelContainerProps> = ({
       })
     }
 
-    if (unsubscribe) return unsubscribe()
+    return () => {
+      if (unsubscribe) unsubscribe()
+    }
   }, [subscribeForMoreMessagesByChannelId, channelId])
 
   const handleOnSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
