@@ -7,8 +7,8 @@
 # ------------------------------------------------------
 FROM node:16.3.0 as builder
 
-WORKDIR /usr/src/client
-COPY ./dist/apps/client .
+WORKDIR /usr/src
+COPY ./dist/apps/client ./client
 
 # ------------------------------------------------------
 # Serve build

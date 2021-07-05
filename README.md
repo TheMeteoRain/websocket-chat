@@ -116,3 +116,32 @@ heroku buildpacks:remove mete-websocket-server https://github.com/lstoll/heroku-
 Purge all things related to project's docker-compose
 
     docker-compose down -v --rmi all --remove-orphans
+
+### Heroku
+
+Login
+https://devcenter.heroku.com/articles/container-registry-and-runtime#getting-started
+
+    heroku container:login
+
+Release steps:
+
+    yarn build
+    docker tag mete_chat_server registry.heroku.com/mete-websocket-server/web
+    docker push registry.heroku.com/mete-websocket-server/web
+
+Manually release
+
+    heroku container:release web -a mete-websocket-server
+
+Open
+
+    heroku open -a mete-websocket-server
+
+Logs
+
+    heroku logs --tail -a mete-websocket-server
+
+Database
+
+    heroku pg:psql postgresql-silhouetted-68222 --app mete-websocket-server

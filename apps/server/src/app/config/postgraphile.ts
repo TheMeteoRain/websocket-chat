@@ -13,6 +13,7 @@ const {
   POSTGRES_PORT,
   POSTGRAHILE_EXPORT_GQL_SCHEMA_PATH,
   NODE_ENV,
+  DEPLOYMENT,
 } = process.env
 
 export default postgraphile(
@@ -22,6 +23,7 @@ export default postgraphile(
     password: POSTGRES_PASSWORD,
     host: POSTGRES_HOST,
     port: POSTGRES_PORT,
+    ...(DEPLOYMENT ? { ssl: { rejectUnauthorized: false } } : null),
   },
   {
     pluginHook,
