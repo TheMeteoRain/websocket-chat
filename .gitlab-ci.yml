@@ -2,6 +2,11 @@ build:
   stage: build
   script:
     - echo "Build stage"
+    - yarn build
+  artifacts:
+    paths:
+      - dist
+    expire_in: 1 hour
 test:
   stage: test
   script:

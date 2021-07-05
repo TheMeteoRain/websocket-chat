@@ -14,11 +14,7 @@ import faker from 'faker'
 import React from 'react'
 import { useHistory } from 'react-router-dom'
 
-const {
-  NX_SERVER_PORT,
-  NX_SERVER_HOST,
-  NX_SERVER_GRAPHQL_ENDPOINT,
-} = process.env
+const { API_PORT, API_HOST, API_ENDPOINT } = process.env
 
 export const ApolloClientProvider: React.FC = ({ children }) => {
   const [token] = useSessionStorageValue('token', null)
@@ -59,7 +55,7 @@ export const ApolloClientProvider: React.FC = ({ children }) => {
   const apolloLink = ApolloLink.split(
     hasSubscriptionOperation,
     new WebSocketLink({
-      uri: `ws://${NX_SERVER_HOST}:${NX_SERVER_PORT}/${NX_SERVER_GRAPHQL_ENDPOINT}`,
+      uri: `ws://${API_HOST}:${API_PORT}/${API_ENDPOINT}`,
       options: {
         reconnect: true,
         connectionParams: {
@@ -69,7 +65,7 @@ export const ApolloClientProvider: React.FC = ({ children }) => {
       },
     }),
     new HttpLink({
-      uri: `http://${NX_SERVER_HOST}:${NX_SERVER_PORT}/${NX_SERVER_GRAPHQL_ENDPOINT}`,
+      uri: `http://${API_HOST}:${API_PORT}/${API_ENDPOINT}`,
     })
   )
 

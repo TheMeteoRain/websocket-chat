@@ -16,8 +16,8 @@ declare namespace NodeJS {
   interface ProcessEnv {
     readonly NODE_ENV: 'development' | 'production' | 'test'
     readonly PUBLIC_URL: string
-    readonly NX_SERVER_PORT: number
-    readonly NX_SERVER_HOST: string
-    readonly NX_SERVER_GRAPHQL_ENDPOINT: string
+    readonly API_PORT: number
+    readonly API_HOST: string
+    readonly API_ENDPOINT: string
   }
 }
