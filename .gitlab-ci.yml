@@ -4,7 +4,7 @@ build:
   stage: build
   script:
     - echo "Build stage"
-    - yarn install --verbose
+    - yarn install --network-timeout 500000
     - yarn build
     - HEROKU_API_KEY=$HEROKU_API_TOKEN heroku container:login
     - docker tag mete_chat_server registry.heroku.com/mete-websocket-server/web
