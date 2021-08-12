@@ -1,5 +1,8 @@
 image: node:16.3.0-alpine3.13
 
+before_script:
+  - curl https://cli-assets.heroku.com/install.sh | sh
+
 build:
   stage: build
   cache:
@@ -7,20 +10,20 @@ build:
       - node_modules/
       - .yarn
   script:
+    - HEROKU_API_KEY=$HEROKU_API_TOKEN yarn heroku container:login
     - echo "Build stage"
     - echo "raspberrypi gets slow while installing packages, hence extra timeout"
     - echo "cypress does not support raspberrypi, cypress is the only optional dependency"
     - yarn install --network-timeout 500000 --ignore-optional
     - ls
     - yarn nx run-many --target=build --projects=client,server --prod
-    - HEROKU_API_KEY=$HEROKU_API_TOKEN heroku container:login
     - docker-compose build
     - docker tag mete_chat_server registry.heroku.com/mete-websocket-server/web
     - docker push registry.heroku.com/mete-websocket-server/web
     - docker tag mete_chat_client registry.heroku.com/mete-websocket-client/web
     - docker push registry.heroku.com/mete-websocket-client/web
-    - heroku container:release web -a mete-websocket-server
-    - heroku container:release web -a mete-websocket-client
+    - yarn heroku container:release web -a mete-websocket-server
+    - yarn heroku container:release web -a mete-websocket-client
   artifacts:
     paths:
       - dist
