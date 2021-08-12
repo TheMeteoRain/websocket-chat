@@ -6,7 +6,7 @@
 # ------------------------------------------------------
 # Install dependencies and build application
 # ------------------------------------------------------
-FROM node:16.3.0 as builder
+FROM node:16.3.0
 
 WORKDIR /usr/src/migration
 COPY ./dist/apps/migration .

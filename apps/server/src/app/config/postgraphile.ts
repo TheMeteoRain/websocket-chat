@@ -23,7 +23,7 @@ export default postgraphile(
     password: POSTGRES_PASSWORD,
     host: POSTGRES_HOST,
     port: POSTGRES_PORT,
-    ...(DEPLOYMENT ? { ssl: { rejectUnauthorized: false } } : null),
+    ...(DEPLOYMENT === true ? { ssl: { rejectUnauthorized: false } } : {}),
   },
   {
     pluginHook,
@@ -37,7 +37,7 @@ export default postgraphile(
     jwtSecret: 'bf',
     ...(NODE_ENV === 'development'
       ? { exportGqlSchemaPath: POSTGRAHILE_EXPORT_GQL_SCHEMA_PATH }
-      : null),
+      : {}),
     websocketMiddlewares: [
       // Add whatever middlewares you need here, note that they should only
       // manipulate properties on req/res, they must not sent response data. e.g.:

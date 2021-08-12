@@ -8,9 +8,8 @@ services:
       dockerfile: ./apps/client/Dockerfile
     ports:
       - '4200:80'
-    env_file:
-      - ./apps/client/.env
     environment:
+      - PORT=80
       - NODE_ENV=production
     depends_on:
       - chat_server

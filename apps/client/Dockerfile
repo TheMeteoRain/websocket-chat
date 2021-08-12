@@ -5,19 +5,10 @@
 # ------------------------------------------------------
 # Install dependencies and build application
 # ------------------------------------------------------
-FROM node:16.3.0 as builder
-
-WORKDIR /usr/src
-COPY ./dist/apps/client ./client
-
-# ------------------------------------------------------
-# Serve build
-# ------------------------------------------------------
 FROM nginx:1.21.0-alpine
 
-COPY --from=builder /usr/src/client /usr/share/nginx/html
-RUN rm /etc/nginx/conf.d/default.conf
-COPY ./nginx.conf /etc/nginx/conf.d
+COPY ./dist/apps/client /usr/share/nginx/html
+COPY ./nginx.conf /etc/nginx/templates/default.conf.template
 
 EXPOSE 80
 

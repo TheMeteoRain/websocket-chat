@@ -15,11 +15,10 @@ import React from 'react'
 import { useHistory } from 'react-router-dom'
 
 const {
-  API_SCHEME_WS,
-  API_SCHEME_HTTP,
-  API_PORT,
-  API_HOST,
-  API_ENDPOINT,
+  NX_API_SCHEME_WS,
+  NX_API_SCHEME_HTTP,
+  NX_API_HOST,
+  NX_API_ENDPOINT,
 } = process.env
 
 export const ApolloClientProvider: React.FC = ({ children }) => {
@@ -37,7 +36,7 @@ export const ApolloClientProvider: React.FC = ({ children }) => {
     // add the authorization to the headers
     operation.setContext({
       headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : null),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
       },
     })
 
@@ -61,7 +60,7 @@ export const ApolloClientProvider: React.FC = ({ children }) => {
   const apolloLink = ApolloLink.split(
     hasSubscriptionOperation,
     new WebSocketLink({
-      uri: `${API_SCHEME_WS}://${API_HOST}:${API_PORT}/${API_ENDPOINT}`,
+      uri: `${NX_API_SCHEME_WS}://${NX_API_HOST}/${NX_API_ENDPOINT}`,
       options: {
         reconnect: true,
         connectionParams: {
@@ -71,7 +70,7 @@ export const ApolloClientProvider: React.FC = ({ children }) => {
       },
     }),
     new HttpLink({
-      uri: `${API_SCHEME_HTTP}://${API_HOST}:${API_PORT}/${API_ENDPOINT}`,
+      uri: `${NX_API_SCHEME_HTTP}://${NX_API_HOST}/${NX_API_ENDPOINT}`,
     })
   )
 

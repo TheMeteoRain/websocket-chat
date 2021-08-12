@@ -23,7 +23,9 @@ export default <KnexEnvironmentConfig>{
       password: POSTGRES_PASSWORD,
       host: POSTGRES_HOST,
       port: POSTGRES_PORT,
-      ...(DEPLOYMENT ? { ssl: { rejectUnauthorized: false } } : null),
+      ...(((DEPLOYMENT as unknown) as boolean) === true
+        ? { ssl: { rejectUnauthorized: false } }
+        : undefined),
     },
     pool: {
       min: 1,

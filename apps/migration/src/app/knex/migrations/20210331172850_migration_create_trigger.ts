@@ -51,10 +51,6 @@ declare
   v_event text = 'newChannel';
   v_topic_template text = TG_ARGV[0];
 begin
-  RAISE INFO 'variable %', v_topic_template;
-  RAISE INFO 'NEW %', NEW;
-  RAISE INFO 'notify %', 'graphql:user:' || NEW.member_id || ':channel';
-
   perform pg_notify('graphql:user:' || NEW.member_id || ':channel', json_build_object(
     'event', v_event,
     'subject', NEW
@@ -91,7 +87,6 @@ begin
     IF v_channel IS NOT NULL THEN
       INSERT INTO channel_member(member_id, channel_id) VALUES (member_id, v_channel.id);
       INSERT INTO channel_member(member_id, channel_id) VALUES (v_member.id, v_channel.id);
-      RAISE INFO 'we did it boys';
     END IF;
 
     RETURN NEXT v_channel;
@@ -117,7 +112,6 @@ begin
   insert into member_account (member_id, email, password_hash) values
     (member.id, email, crypt(password, gen_salt('bf')));
 
-  RAISE INFO 'perkele';
   PERFORM create_channels_for_user(member.id);
 
   return member;
@@ -136,8 +130,6 @@ begin
   where a.email = $1;
 
   if account.password_hash = crypt(password, account.password_hash) then
-    RAISE INFO 'jwt_token %', ('${process.env.ROLE}', account.member_id, extract(epoch from (now() + interval '2 days')))::jwt_token;
-
     return ('${process.env.ROLE}', account.member_id, extract(epoch from (now() + interval '2 days')))::jwt_token;
   else
     return null;
@@ -156,16 +148,6 @@ const TYPE_JWT_TOKEN = `create type jwt_token as (
   exp bigint
 );`
 
-// const USER_INSERT_TRIGGER = `CREATE TRIGGER graphql_subscription_new_user
-//   AFTER INSERT ON member  EXECUTE PROCEDURE graphql_subscription(
-//     'newMember',
-//     'graphql:member'
-//   )`
-
-// const CHANNEL_INSERT_ON_NEW_USER_TRIGGER = `CREATE TRIGGER channel_insert_on_new_user
-//   AFTER INSERT ON member
-//   FOR EACH ROW
-//   EXECUTE PROCEDURE create_channel()`
 const TRIGGER_NEW_CHANNEL = `CREATE TRIGGER trigger_new_channel
   AFTER INSERT ON channel_member
   FOR EACH ROW
@@ -176,21 +158,6 @@ const TRIGGER_NEW_MESSAGE = `CREATE TRIGGER trigger_new_message
   AFTER INSERT ON message
   FOR EACH ROW
   EXECUTE PROCEDURE graphql_subscription_new_message();`
-// const FUNCTION_HELLO = `create function function_hello(a text) returns trigger as $$
-//   declare
-//   begin
-//     RAISE INFO 'NEW %', NEW;
-//     RAISE INFO 'TG_OP %', TG_OP;
-//     RAISE INFO 'TG_ARGV %', TG_ARGV[0];
-//     RAISE INFO 'a %', a;
-
-//     return NEW;
-//   end;
-//   $$ language plpgsql volatile set search_path from current`
-// const TRIGGER_HELLO = `CREATE TRIGGER trigger_hello
-//   AFTER INSERT ON message
-//   FOR EACH ROW
-//   EXECUTE PROCEDURE function_hello();`
 
 const trimTrailingParenthesis = (text: string) => {
   const indexOfOpeningParenthesis = text.indexOf('(')
