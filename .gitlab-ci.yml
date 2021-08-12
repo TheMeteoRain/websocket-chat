@@ -1,8 +1,17 @@
+image: node:16.3.0-alpine3.13
+
 build:
   stage: build
   script:
     - echo "Build stage"
     - yarn build
+    - HEROKU_API_KEY=$HEROKU_API_TOKEN heroku container:login
+    - docker tag mete_chat_server registry.heroku.com/mete-websocket-server/web
+    - docker push registry.heroku.com/mete-websocket-server/web
+    - docker tag mete_chat_client registry.heroku.com/mete-websocket-client/web
+    - docker push registry.heroku.com/mete-websocket-client/web
+    - heroku container:release web -a mete-websocket-server
+    - heroku container:release web -a mete-websocket-client
   artifacts:
     paths:
       - dist
