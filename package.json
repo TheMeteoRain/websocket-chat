@@ -89,6 +89,8 @@
     "@nrwl/tao": "12.3.6",
     "@nrwl/web": "12.3.6",
     "@nrwl/workspace": "12.3.6",
+    "@oclif/color": "0.1.0",
+    "@oclif/plugin-legacy": "^1.0.0",
     "@testing-library/react": "11.2.5",
     "@types/compression": "^1.7.0",
     "@types/cors": "^2.8.10",
