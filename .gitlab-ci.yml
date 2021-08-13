@@ -1,6 +1,7 @@
 image: node:16.3.0-alpine3.13
 
 before_script:
+  - apk add --update sh
   - curl https://cli-assets.heroku.com/install.sh | sh
 
 build:
