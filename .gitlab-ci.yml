@@ -1,8 +1,5 @@
-image: node:16-stretch-slim
-
 before_script:
-  - apt install curl bash
-  - curl https://cli-assets.heroku.com/install.sh | sh
+  - apk update && apk add --no-cache docker-cli docker-compose
 
 build:
   stage: build
@@ -11,12 +8,14 @@ build:
       - node_modules/
       - .yarn
   script:
-    - HEROKU_API_KEY=$HEROKU_API_TOKEN yarn heroku container:login
+    - docker ps
+    - docker-compose --help
     - echo "Build stage"
     - echo "raspberrypi gets slow while installing packages, hence extra timeout"
     - echo "cypress does not support raspberrypi, cypress is the only optional dependency"
     - yarn install --network-timeout 500000 --ignore-optional
     - ls
+    - HEROKU_API_KEY=$HEROKU_API_TOKEN yarn heroku container:login
     - yarn nx run-many --target=build --projects=client,server --prod
     - docker-compose build
     - docker tag mete_chat_server registry.heroku.com/mete-websocket-server/web
