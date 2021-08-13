@@ -1,7 +1,6 @@
 image: node:16-stretch-slim
 
 before_script:
-  - apk add --update curl bash
   - curl https://cli-assets.heroku.com/install.sh | sh
 
 build:
