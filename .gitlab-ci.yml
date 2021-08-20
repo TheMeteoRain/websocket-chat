@@ -6,7 +6,7 @@ build:
   cache:
     paths:
       - node_modules/
-      - .yarn
+      - .yarn-lock
   script:
     - docker ps
     - docker-compose --help
