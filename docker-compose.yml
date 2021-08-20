@@ -24,7 +24,7 @@ services:
       - ./apps/server/.env
     environment:
       - POSTGRAHILE_EXPORT_GQL_SCHEMA_PATH= # No value. Making sure it is empty in docker environment
-      - NODE_ENV=development
+      - NODE_ENV=production
       - POSTGRES_HOST=chat_database
       - POSTGRES_PORT=5432
       # wait-for-it environment variables
