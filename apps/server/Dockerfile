@@ -5,7 +5,7 @@
 # ------------------------------------------------------
 # Install dependencies and build application
 # ------------------------------------------------------
-FROM node:16.3.0-alpine3.13
+FROM node:16.3.0-alpine3.12
 
 RUN ["apk", "add", "--update", "bash"]
 
