@@ -18,9 +18,9 @@ build:
     - HEROKU_API_KEY=$HEROKU_API_TOKEN yarn heroku container:login
     - yarn nx run-many --target=build --projects=client,server --prod
     - docker-compose build
-    - docker tag mete_chat_server registry.heroku.com/mete-websocket-server/web
+    - docker tag websocket-chat_chat_server registry.heroku.com/mete-websocket-server/web
     - docker push registry.heroku.com/mete-websocket-server/web
-    - docker tag mete_chat_client registry.heroku.com/mete-websocket-client/web
+    - docker tag websocket-chat_chat_client registry.heroku.com/mete-websocket-client/web
     - docker push registry.heroku.com/mete-websocket-client/web
     - yarn heroku container:release web -a mete-websocket-server
     - yarn heroku container:release web -a mete-websocket-client
