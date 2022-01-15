@@ -1,6 +1,6 @@
 import CssBaseline from '@material-ui/core/CssBaseline'
 import {
-  createMuiTheme,
+  createTheme,
   makeStyles,
   ThemeProvider,
 } from '@material-ui/core/styles'
@@ -56,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-const theme = createMuiTheme({})
+const theme = createTheme({})
 
 function Copyright() {
   return (
