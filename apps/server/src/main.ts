@@ -4,7 +4,7 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 // App setup
-const PORT = process.env.PORT
+const { PORT, NODE_ENV } = process.env
 const app = express()
 
 /************************************************************/
@@ -29,4 +29,6 @@ app.use(postgraphile())
 app.listen(PORT, () => {
   console.log(`✨ Listening on port ${PORT}`)
   console.log(`🚀 http://localhost:${PORT}`)
+  if (NODE_ENV === 'development')
+    console.log(`🚀 http://localhost:${PORT}/graphile`)
 })
