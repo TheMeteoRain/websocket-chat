@@ -23,7 +23,7 @@ app.use(helmet())
 import morgan = require('morgan')
 app.use(morgan('tiny'))
 
-app.use(postgraphile)
+app.use(postgraphile())
 /************************************************************/
 
 app.listen(PORT, () => {
