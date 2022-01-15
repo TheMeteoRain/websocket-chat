@@ -67,7 +67,7 @@ export default makeExtendSchemaPlugin(({ pgSql: sql }) => ({
     }
     input MessageSubscriptionInput {
       channelId: UUID!
-  }
+    }
 
     extend type Subscription {
       """
