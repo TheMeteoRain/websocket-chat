@@ -26,6 +26,11 @@ export type GraphqlHelpQuery<TQueryKey extends string, TQueryType> = {
 export type SocialProps = {
   children: React.ReactNode
 }
+
+export type SendMessageInput = Pick<
+  MessageInput,
+  'text' | 'channelId' | 'memberId'
+>
 export type Social = {
   register: (
     registerMemberObject: RegisterMemberInput
@@ -35,7 +40,7 @@ export type Social = {
   ) => Promise<GraphqlHelpQuery<'authenticate', AuthenticatePayload>>
   logout: () => void
   getChannels: () => void
-  sendMessage: (messageInput: MessageInput) => Promise<Message>
+  sendMessage: (messageInput: SendMessageInput) => Promise<Message>
   getMessagesByChannelIdQuery: QueryTuple<
     Pick<Query, 'channelById'>,
     Required<Pick<MessageInput, 'id'>>
@@ -492,7 +497,7 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
   }, [removeToken])
 
   const sendMessage = React.useCallback(
-    async (messageInput: MessageInput) => {
+    async (messageInput: SendMessageInput) => {
       const { data, errors } = await createMessageFn({
         variables: messageInput,
       })
