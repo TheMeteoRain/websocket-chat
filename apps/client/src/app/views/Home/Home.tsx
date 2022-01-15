@@ -159,8 +159,6 @@ export const Home: React.FC<HomeProps> = (props) => {
 
   React.useLayoutEffect(() => {
     if (data?.memberById) {
-      console.log(data.memberById)
-      console.log(channelsByMemberIdToChannelObject(data))
       dispatch({
         type: 'UPDATE_CHANNELS',
         payload: {
