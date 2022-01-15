@@ -19,16 +19,20 @@ import {
 import { useSessionStorageValue } from '@react-hookz/web'
 import React from 'react'
 
+export type GraphqlHelpQuery<TQueryKey extends string, TQueryType> = {
+  [K in TQueryKey]: TQueryType
+}
+
 export type SocialProps = {
   children: React.ReactNode
 }
 export type Social = {
   register: (
     registerMemberObject: RegisterMemberInput
-  ) => Promise<HelpQuery<'registerMember', RegisterMemberPayload>>
+  ) => Promise<GraphqlHelpQuery<'registerMember', RegisterMemberPayload>>
   authenticate: (
     authenticateObject: AuthenticateInput
-  ) => Promise<HelpQuery<'authenticate', AuthenticatePayload>>
+  ) => Promise<GraphqlHelpQuery<'authenticate', AuthenticatePayload>>
   logout: () => void
   getChannels: () => void
   sendMessage: (messageInput: MessageInput) => Promise<Message>
@@ -85,7 +89,7 @@ const REMOVE_USER = gql`
   }
 `
 
-const GUERY_CHANNELS_BY_USER_ID = gql`
+const QUERY_CHANNELS_BY_USER_ID = gql`
   query QueryMemberById($id: UUID!) {
     memberById(id: $id) {
       channelMembersByMemberId {
@@ -110,7 +114,7 @@ const GUERY_CHANNELS_BY_USER_ID = gql`
   }
 `
 
-export const GUERY_MESSAGES_BY_CHANNEL_ID = gql`
+export const QUERY_MESSAGES_BY_CHANNEL_ID = gql`
   query GueryMessagesByChannelId($id: UUID!) {
     channelById(id: $id) {
       messagesByChannelId(orderBy: UPDATED_AT_ASC) {
@@ -234,7 +238,11 @@ export interface QueryMemberByIdData extends Pick<Query, 'memberById'> {}
 
 export interface Member extends GraphqlMember {}
 
-export interface Channel extends GraphqlChannel {
+export interface Channel
+  extends Omit<
+    GraphqlChannel,
+    'messagesByChannelId' | 'channelMembersByChannelId'
+  > {
   users: GraphqlMember[]
   messages: Message[]
 }
@@ -353,7 +361,7 @@ const channelsByMemberIdToChannelObject = (
 }
 
 const subscribeForMoreChannelsByMemberIdToChannelObject = (
-  data: HelpQuery<'newChannel', ChannelSubscriptionPayload>
+  data: GraphqlHelpQuery<'newChannel', ChannelSubscriptionPayload>
 ): Channel => {
   return {
     id: data.newChannel.channel.id,
@@ -389,7 +397,7 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
   const getMessagesByChannelIdQuery = useLazyQuery<
     QueryChannelByIdData,
     Required<Pick<MessageInput, 'id'>>
-  >(GUERY_MESSAGES_BY_CHANNEL_ID, { fetchPolicy: 'cache-and-network' })
+  >(QUERY_MESSAGES_BY_CHANNEL_ID, { fetchPolicy: 'cache-and-network' })
   const [
     getChannelsByMemberId,
     {
@@ -397,7 +405,7 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
       subscribeToMore: subscribeForMoreChannelsByMemberId,
     },
   ] = useLazyQuery<QueryMemberByIdData, Required<Pick<MemberInput, 'id'>>>(
-    GUERY_CHANNELS_BY_USER_ID
+    QUERY_CHANNELS_BY_USER_ID
   )
 
   const getChannels = React.useCallback(async () => {
@@ -409,26 +417,25 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
   React.useEffect(() => {
     if (subscribeForMoreChannelsByMemberId) {
       subscribeForMoreChannelsByMemberId<
-        HelpQuery<'newChannel', ChannelSubscriptionPayload>
+        GraphqlHelpQuery<'newChannel', ChannelSubscriptionPayload>
       >({
         document: CHANNEL_SUBSCRIPTION,
         updateQuery: (prev, { subscriptionData }) => {
-          const next = Object.assign<
-            QueryMemberByIdData,
-            QueryMemberByIdData,
-            QueryMemberByIdData
-          >({}, prev, {
-            memberById: {
-              ...prev.memberById,
-              channelMembersByMemberId: {
-                ...prev.memberById.channelMembersByMemberId,
-                nodes: [
-                  ...prev.memberById.channelMembersByMemberId.nodes,
-                  subscriptionData.data.newChannel.channel,
-                ],
+          const next: QueryMemberByIdData = {
+            ...prev,
+            ...{
+              memberById: {
+                ...prev.memberById,
+                channelMembersByMemberId: {
+                  ...prev.memberById.channelMembersByMemberId,
+                  nodes: [
+                    ...prev.memberById.channelMembersByMemberId.nodes,
+                    subscriptionData.data.newChannel.channel,
+                  ],
+                },
               },
             },
-          })
+          }
           return next
         },
       })
