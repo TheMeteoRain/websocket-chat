@@ -18,8 +18,11 @@ const MESSAGE_SUBSCRIPTION = gql`
     newMessage(input: { channelId: $channelId }) {
       message {
         id
-        memberId
         text
+        channelId
+        memberId
+        createdAt
+        updatedAt
       }
     }
   }
@@ -81,11 +84,16 @@ export const ChannelContainer: React.VFC<ChannelContainerProps> = () => {
         document: MESSAGE_SUBSCRIPTION,
         variables: { channelId: channelId },
         updateQuery: (prev, { subscriptionData }) => {
-          const next = Object.assign<
-            QueryChannelByIdData,
-            QueryChannelByIdData,
-            QueryChannelByIdData
-          >({}, prev, {
+          if (
+            prev.channelById.messagesByChannelId.edges.find(
+              (edge) =>
+                edge.node.id === subscriptionData.data.newMessage.message.id
+            )
+          )
+            return prev
+
+          const next: QueryChannelByIdData = {
+            ...prev,
             channelById: {
               ...prev.channelById,
               messagesByChannelId: {
@@ -98,7 +106,7 @@ export const ChannelContainer: React.VFC<ChannelContainerProps> = () => {
                 ],
               },
             },
-          })
+          }
 
           return next
         },
