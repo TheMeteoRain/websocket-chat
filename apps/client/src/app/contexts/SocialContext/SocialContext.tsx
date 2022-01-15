@@ -423,16 +423,16 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
         updateQuery: (prev, { subscriptionData }) => {
           const next: QueryMemberByIdData = {
             ...prev,
-            ...{
-              memberById: {
-                ...prev.memberById,
-                channelMembersByMemberId: {
-                  ...prev.memberById.channelMembersByMemberId,
-                  nodes: [
-                    ...prev.memberById.channelMembersByMemberId.nodes,
-                    subscriptionData.data.newChannel.channel,
-                  ],
-                },
+            memberById: {
+              ...prev.memberById,
+              channelMembersByMemberId: {
+                ...prev.memberById.channelMembersByMemberId,
+                nodes: [
+                  ...prev.memberById.channelMembersByMemberId.nodes,
+                  subscribeForMoreChannelsByMemberIdToChannelObject(
+                    subscriptionData
+                  ),
+                ],
               },
             },
           }
