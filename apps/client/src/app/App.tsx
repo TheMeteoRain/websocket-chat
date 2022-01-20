@@ -1,22 +1,21 @@
 import CssBaseline from '@material-ui/core/CssBaseline'
+import Link from '@material-ui/core/Link'
 import {
   createTheme,
   makeStyles,
   ThemeProvider,
 } from '@material-ui/core/styles'
+import Typography from '@material-ui/core/Typography'
+import { ErrorBoundary, LinearWithValueLabel } from '@src/components'
+import { HeaderContainer } from '@src/containers'
+import { SocialProvider, useSocial } from '@src/contexts'
 import React, { Suspense } from 'react'
 import {
   BrowserRouter as Router,
+  Redirect,
   Route,
   Switch,
-  Redirect,
 } from 'react-router-dom'
-import { ErrorBoundary, LinearWithValueLabel } from '@src/components'
-import { HeaderContainer } from '@src/containers'
-import Link from '@material-ui/core/Link'
-import Typography from '@material-ui/core/Typography'
-import { SocialProvider } from '@src/contexts'
-import { useSocial } from '@src/contexts'
 import { ApolloClientProvider } from './providers'
 
 const Home = React.lazy(() => {
@@ -70,29 +69,47 @@ function Copyright() {
   )
 }
 
+const PrivateRoute: React.FC<RouteProps> = (props) => {
+  const { children, ...rest } = props
+  const { isAuthenticated } = useSocial()
+
+  return (
+    <Route
+      {...rest}
+      render={({ location }) =>
+        isAuthenticated ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: '/',
+              state: { from: location },
+            }}
+          />
+        )
+      }
+    />
+  )
+}
+
 const Routes = () => {
   const { isAuthenticated } = useSocial()
 
   return (
     <Router>
       <Switch>
-        <Route
-          exact
-          path='/'
-          render={(props) => {
-            if (isAuthenticated) return <Redirect to='/channel' />
-            return <SignUp {...props} />
-          }}
-        />
-        <Route
+        <Route exact path='/'>
+          {isAuthenticated ? <Redirect to='/channel' /> : <SignUp />}
+        </Route>
+
+        <PrivateRoute
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          //@ts-ignore
           path='/channel'
-          render={(props) => {
-            if (isAuthenticated) return <Home {...props} />
-            return <Redirect to='/' />
-          }}
-        />
+        >
+          <Home />
+        </PrivateRoute>
         <Route component={NotFound} path='/404' />
-        {/* <Redirect to='/404' /> */}
       </Switch>
     </Router>
   )
