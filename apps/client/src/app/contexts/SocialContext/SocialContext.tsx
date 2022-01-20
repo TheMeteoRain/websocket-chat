@@ -17,27 +17,24 @@ import {
   Scalars,
 } from '@mete/types'
 import { useSessionStorageValue } from '@react-hookz/web'
+import {
+  useAuthenticateMutation,
+  AuthenticateMutationHookResult,
+} from '@src/graphql/mutations/authenticate.generated'
+import {
+  useRegisterMemberMutation,
+  RegisterMemberMutationHookResult,
+} from '@src/graphql/mutations/registerMember.generated'
+import { useCurrentMemberLazyQuery } from '@src/graphql/queries/currentMember.generated'
 import React from 'react'
-
-export type GraphqlHelpQuery<TQueryKey extends string, TQueryType> = {
-  [K in TQueryKey]: TQueryType
-}
 
 export type SocialProps = {
   children: React.ReactNode
 }
 
-export type SendMessageInput = Pick<
-  MessageInput,
-  'text' | 'channelId' | 'memberId'
->
 export type Social = {
-  register: (
-    registerMemberObject: RegisterMemberInput
-  ) => Promise<GraphqlHelpQuery<'registerMember', RegisterMemberPayload>>
-  authenticate: (
-    authenticateObject: AuthenticateInput
-  ) => Promise<GraphqlHelpQuery<'authenticate', AuthenticatePayload>>
+  register: RegisterMemberMutationHookResult[0]
+  authenticate: AuthenticateMutationHookResult[0]
   logout: () => void
 } & SocialState
 
@@ -45,81 +42,10 @@ const SocialContext = React.createContext<Required<Social> | undefined>(
   undefined
 )
 
-export type RecordWrapper<TKey = '', T = unknown> = Record<TKey, T>
-
-const MUTATION_REGISTER_MEMBER = gql`
-  mutation RegisterMember(
-    $firstName: String!
-    $lastName: String!
-    $email: String!
-    $password: String!
-  ) {
-    registerMember(
-      input: {
-        firstName: $firstName
-        lastName: $lastName
-        email: $email
-        password: $password
-      }
-    ) {
-      member {
-        id
-        firstName
-        lastName
-      }
-    }
-  }
-`
-
-const MUTATION_AUTHENTICATE = gql`
-  mutation Authenticate($email: String!, $password: String!) {
-    authenticate(input: { email: $email, password: $password }) {
-      jwtToken
-    }
-  }
-`
-
-const QUERY_CURRENT_MEMBER = gql`
-  query CurrentMember {
-    currentMember {
-      id
-      firstName
-      lastName
-    }
-  }
-`
-
-export interface RegisterMemberData
-  extends RecordWrapper<'registerMember', RegisterMemberPayload> {}
-export interface CreateMessageData
-  extends RecordWrapper<'createMessage', CreateMessagePayload> {}
-export interface AutenticateMemberData
-  extends RecordWrapper<'authenticate', AuthenticatePayload> {}
-export interface QueryCurrentMemberData extends Pick<Query, 'currentMember'> {}
-export interface QueryChannelByIdData extends Pick<Query, 'channelById'> {}
-export interface QueryMemberByIdData extends Pick<Query, 'memberById'> {}
-
-export interface Member extends GraphqlMember {}
-
-export interface Channel
-  extends Omit<
-    GraphqlChannel,
-    'messagesByChannelId' | 'channelMembersByChannelId'
-  > {
-  users: GraphqlMember[]
-  messages: Message[]
-}
-
-export interface AuthenticatePayload
-  extends Omit<GraphqlAuthenticatePayload, 'jwtToken'> {
-  jwtToken?: Maybe<Scalars['String']>
-}
-
 export interface SocialState {
   current_member: Member
   isAuthenticated: boolean
   jwtToken: string
-  channels: Channel[]
 }
 export type SocialReducerActionTypes =
   | { type: 'UPDATE_CURRENT_MEMBER'; payload: { member: Member } }
@@ -161,18 +87,12 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
   const [state, dispatch] = React.useReducer(socialReducer, initialState)
   const [token, setToken, removeToken] = useSessionStorageValue('token', null)
 
-  const [registerMemberFn] = useMutation<
-    RegisterMemberData,
-    RegisterMemberInput
-  >(MUTATION_REGISTER_MEMBER)
-  const [authenticateMemberFn] = useMutation<
-    AutenticateMemberData,
-    AuthenticateInput
-  >(MUTATION_AUTHENTICATE)
+  const [registerMemberFn] = useRegisterMemberMutation()
+  const [authenticateMemberFn] = useAuthenticateMutation()
   const [
     getCurrentMemberFn,
     { data: currentMemberData },
-  ] = useLazyQuery<QueryCurrentMemberData>(QUERY_CURRENT_MEMBER, {
+  ] = useCurrentMemberLazyQuery({
     fetchPolicy: 'network-only',
   })
 
