@@ -1,15 +1,5 @@
-import { gql } from '@apollo/client'
-import {
-  MessageSubscriptionInput,
-  MessageSubscriptionPayload,
-  Query,
-} from '@mete/types'
 import { Channel } from '@src/components/Channel'
-import {
-  QueryChannelByIdData,
-  RecordWrapper,
-  useSocial,
-} from '@src/contexts/SocialContext'
+import { useSocial } from '@src/contexts/SocialContext'
 import { useCreateMessageMutation } from '@src/graphql/mutations/createMessage.generated'
 import { useGueryMessagesByChannelIdQuery } from '@src/graphql/queries/messagesByChannelId.generated'
 import {

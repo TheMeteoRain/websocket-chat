@@ -1,29 +1,15 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import Toolbar from '@material-ui/core/Toolbar'
-import React, { Suspense } from 'react'
-import {
-  Route,
-  BrowserRouter as Router,
-  Switch,
-  useRouteMatch,
-  Link,
-} from 'react-router-dom'
 import { ChannelDrawer } from '@src/components'
-import {
-  GraphqlHelpQuery,
-  QueryMemberByIdData,
-  useSocial,
-} from '@src/contexts/SocialContext'
 import { ChannelContainer } from '@src/containers/ChannelContainer'
-import { gql, useQuery } from '@apollo/client'
-import { ChannelSubscriptionPayload, MemberInput } from '@mete/types'
+import { useSocial } from '@src/contexts/SocialContext'
 import { useChannelsByMemberIdQuery } from '@src/graphql/queries/channelsByMemberId.generated'
 import {
   ChannelDocument,
   ChannelSubscription,
   ChannelSubscriptionVariables,
 } from '@src/graphql/subscriptions/channel.generated'
-import { CircularProgress } from '@material-ui/core'
+import React from 'react'
+import { Route, Switch, useRouteMatch } from 'react-router-dom'
 
 const drawerWidth = 240
 

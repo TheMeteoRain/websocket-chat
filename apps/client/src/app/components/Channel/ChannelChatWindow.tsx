@@ -1,6 +1,5 @@
 import Paper from '@material-ui/core/Paper'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { Member } from '@src/contexts/SocialContext/SocialContext'
 import React from 'react'
 import { ChannelChatMessage } from './ChannelChatMessage'
 import { CircularProgress } from '@material-ui/core'

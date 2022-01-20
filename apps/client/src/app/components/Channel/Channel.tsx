@@ -1,5 +1,4 @@
 import React from 'react'
-import { Member, useSocial } from '@src/contexts/SocialContext/SocialContext'
 import { ChannelChatWindow, ChannelChatWindowProps } from './ChannelChatWindow'
 import { ChannelForm, ChannelFormProps } from './ChannelForm'
 import { ChannelHeader } from './ChannelHeader'
