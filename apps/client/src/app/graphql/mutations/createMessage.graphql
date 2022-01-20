@@ -1,0 +1,16 @@
+mutation CreateMessage($channelId: UUID!, $memberId: UUID!, $text: String!) {
+  createMessage(
+    input: {
+      message: { channelId: $channelId, memberId: $memberId, text: $text }
+    }
+  ) {
+    message {
+      id
+      text
+      channelId
+      memberId
+      createdAt
+      updatedAt
+    }
+  }
+}

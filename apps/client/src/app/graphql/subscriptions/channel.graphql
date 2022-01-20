@@ -1,0 +1,45 @@
+subscription Channel($id: UUID!) {
+  newChannel {
+    event
+    channel {
+      channelMembersByChannelId(filter: { memberId: { notEqualTo: $id } }) {
+        nodes {
+          channelByChannelId {
+            channelMembersByChannelId(
+              filter: { memberId: { notEqualTo: $id } }
+            ) {
+              nodes {
+                nodeId
+                channelId
+                channelByChannelId {
+                  messagesByChannelId(last: 50) {
+                    nodes {
+                      id
+                      nodeId
+                      memberId
+                      text
+                      createdAt
+                      updatedAt
+                    }
+                  }
+                  channelMembersByChannelId(
+                    filter: { memberId: { notEqualTo: $id } }
+                  ) {
+                    nodes {
+                      memberByMemberId {
+                        firstName
+                        lastName
+                        id
+                        nodeId
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

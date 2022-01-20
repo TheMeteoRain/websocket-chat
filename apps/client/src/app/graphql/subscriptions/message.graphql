@@ -1,0 +1,12 @@
+subscription Message($channelId: UUID!) {
+  newMessage(input: { channelId: $channelId }) {
+    message {
+      nodeId
+      id
+      text
+      memberId
+      createdAt
+      updatedAt
+    }
+  }
+}
