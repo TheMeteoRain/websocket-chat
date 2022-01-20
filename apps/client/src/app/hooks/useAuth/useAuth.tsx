@@ -72,18 +72,19 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
   )
   const [registerMemberFn] = useRegisterMemberMutation()
   const [authenticateMemberFn] = useAuthenticateMutation()
-  const { data } = useCurrentMemberQuery({
+  useCurrentMemberQuery({
     fetchPolicy: 'network-only',
-  })
+    onCompleted: (data) => {
+      if (token && data?.currentMember) {
+        setJWTToken(token)
 
-  React.useEffect(() => {
-    if (data?.currentMember) {
-      dispatch({
-        type: 'UPDATE_MEMBER',
-        payload: { member: data?.currentMember },
-      })
-    }
-  }, [data?.currentMember])
+        dispatch({
+          type: 'UPDATE_MEMBER',
+          payload: { member: data?.currentMember },
+        })
+      }
+    },
+  })
 
   const setJWTToken = React.useCallback(
     (token: string) => {
@@ -95,10 +96,6 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
     },
     [setToken]
   )
-
-  React.useEffect(() => {
-    if (token) setJWTToken(token)
-  }, [setJWTToken, token])
 
   const authenticateFn = React.useCallback(
     async (options: AuthenticateMutationOptions) => {
