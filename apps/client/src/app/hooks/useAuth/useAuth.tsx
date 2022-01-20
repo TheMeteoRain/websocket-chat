@@ -71,7 +71,11 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
     null
   )
   const [registerMemberFn] = useRegisterMemberMutation()
-  const [authenticateMemberFn] = useAuthenticateMutation()
+  const [authenticate] = useAuthenticateMutation({
+    onCompleted: (data) => {
+      setJWTToken(data.authenticate.jwtToken)
+    },
+  })
   useCurrentMemberQuery({
     fetchPolicy: 'network-only',
     onCompleted: (data) => {
@@ -97,16 +101,6 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
     [setToken]
   )
 
-  const authenticateFn = React.useCallback(
-    async (options: AuthenticateMutationOptions) => {
-      const result = await authenticateMemberFn(options)
-      setJWTToken(result.data.authenticate.jwtToken)
-
-      return result
-    },
-    [authenticateMemberFn, setJWTToken]
-  )
-
   const register = React.useCallback(
     async (options: RegisterMemberMutationOptions) => {
       const { email, password } = options.variables
@@ -114,7 +108,7 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
       const {
         data: { registerMember },
       } = result
-      await authenticateFn({
+      await authenticate({
         variables: {
           email,
           password,
@@ -128,7 +122,7 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
 
       return result
     },
-    [authenticateFn, registerMemberFn]
+    [authenticate, registerMemberFn]
   )
 
   const logout = React.useCallback(() => {
@@ -141,7 +135,7 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
       value={{
         register,
         logout,
-        authenticate: authenticateFn,
+        authenticate,
         ...state,
       }}
     >
