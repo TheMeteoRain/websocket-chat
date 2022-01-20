@@ -1,32 +1,20 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-// @ts-nocheck
-import { gql, QueryTuple, useLazyQuery, useMutation } from '@apollo/client'
-import {
-  AuthenticateInput,
-  AuthenticatePayload as GraphqlAuthenticatePayload,
-  Channel as GraphqlChannel,
-  ChannelSubscriptionPayload,
-  CreateMessagePayload,
-  Member as GraphqlMember,
-  MemberInput,
-  Message,
-  MessageInput,
-  Query,
-  RegisterMemberInput,
-  RegisterMemberPayload,
-  Scalars,
-} from '@mete/types'
 import { useSessionStorageValue } from '@react-hookz/web'
 import {
-  useAuthenticateMutation,
   AuthenticateMutationHookResult,
+  AuthenticateMutationOptions,
+  useAuthenticateMutation,
 } from '@src/graphql/mutations/authenticate.generated'
 import {
-  useRegisterMemberMutation,
   RegisterMemberMutationHookResult,
+  RegisterMemberMutationOptions,
+  useRegisterMemberMutation,
 } from '@src/graphql/mutations/registerMember.generated'
-import { useCurrentMemberLazyQuery } from '@src/graphql/queries/currentMember.generated'
+import {
+  useCurrentMemberLazyQuery,
+  useCurrentMemberQuery,
+} from '@src/graphql/queries/currentMember.generated'
 import React from 'react'
+import { useHistory } from 'react-router-dom'
 
 export type SocialProps = {
   children: React.ReactNode
@@ -56,13 +44,12 @@ const initialState: SocialState = {
   current_member: null,
   isAuthenticated: false,
   jwtToken: null,
-  channels: [],
 }
 
-const socialReducer: React.Reducer<SocialState, SocialReducerActionTypes> = (
-  prevState,
-  action
-) => {
+const socialReducer: React.Reducer<
+  SocialState,
+  SocialReducerActionTypes | { type: '' }
+> = (prevState, action) => {
   switch (action.type) {
     case 'UPDATE_CURRENT_MEMBER': {
       return { ...prevState, current_member: action.payload.member }
@@ -86,15 +73,20 @@ const socialReducer: React.Reducer<SocialState, SocialReducerActionTypes> = (
 const SocialProvider: React.FC<SocialProps> = ({ children }) => {
   const [state, dispatch] = React.useReducer(socialReducer, initialState)
   const [token, setToken, removeToken] = useSessionStorageValue('token', null)
-
   const [registerMemberFn] = useRegisterMemberMutation()
   const [authenticateMemberFn] = useAuthenticateMutation()
-  const [
-    getCurrentMemberFn,
-    { data: currentMemberData },
-  ] = useCurrentMemberLazyQuery({
+  const { data } = useCurrentMemberQuery({
     fetchPolicy: 'network-only',
   })
+
+  React.useEffect(() => {
+    if (data?.currentMember) {
+      dispatch({
+        type: 'UPDATE_CURRENT_MEMBER',
+        payload: { member: data?.currentMember },
+      })
+    }
+  }, [data?.currentMember])
 
   const setJWTToken = React.useCallback(
     (token: string) => {
@@ -107,37 +99,38 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
     [setToken]
   )
 
-  const authenticate = React.useCallback(
-    async (authenticateObject: AuthenticateInput) => {
-      const { data } = await authenticateMemberFn({
-        variables: authenticateObject,
-      })
-      setJWTToken(data.authenticate.jwtToken)
+  const authenticateFn = React.useCallback(
+    async (options: AuthenticateMutationOptions) => {
+      const result = await authenticateMemberFn(options)
+      setJWTToken(result.data.authenticate.jwtToken)
 
-      return data
+      return result
     },
     [authenticateMemberFn, setJWTToken]
   )
 
   const register = React.useCallback(
-    async (registerMemberObject: RegisterMemberInput) => {
-      const { email, password } = registerMemberObject
-      const { data: registerMemberData } = await registerMemberFn({
-        variables: registerMemberObject,
-      })
-      await authenticate({
-        email,
-        password,
-      })
-      dispatch({
-        type: 'UPDATE_CURRENT_MEMBER',
-        payload: { member: registerMemberData?.registerMember?.member },
+    async (options: RegisterMemberMutationOptions) => {
+      const { email, password } = options.variables
+      const result = await registerMemberFn(options)
+      const {
+        data: { registerMember },
+      } = result
+      await authenticateFn({
+        variables: {
+          email,
+          password,
+        },
       })
 
-      //if (errors) return errors
-      return registerMemberData
+      dispatch({
+        type: 'UPDATE_CURRENT_MEMBER',
+        payload: { member: registerMember?.member },
+      })
+
+      return result
     },
-    [authenticate, registerMemberFn]
+    [authenticateFn, registerMemberFn]
   )
 
   const logout = React.useCallback(() => {
@@ -145,31 +138,12 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
     dispatch({ type: 'CLEAR' })
   }, [removeToken])
 
-  // Fetch for the current member before we render anything
-  React.useLayoutEffect(() => {
-    if (token) getCurrentMemberFn()
-  }, [token, getCurrentMemberFn])
-
-  // Update current member when fetching is done
-  React.useLayoutEffect(() => {
-    if (token && currentMemberData?.currentMember) {
-      dispatch({
-        type: 'UPDATE_CURRENT_MEMBER',
-        payload: { member: currentMemberData?.currentMember },
-      })
-      dispatch({
-        type: 'UPDATE_JWT_TOKEN',
-        payload: { jwtToken: token },
-      })
-    }
-  }, [currentMemberData?.currentMember, token])
-
   return (
     <SocialContext.Provider
       value={{
         register,
         logout,
-        authenticate,
+        authenticate: authenticateFn,
         ...state,
       }}
     >
