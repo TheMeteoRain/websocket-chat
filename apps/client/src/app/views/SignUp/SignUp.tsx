@@ -73,10 +73,12 @@ export const SignUp: React.FC<SignUpProps> = (props) => {
 
   const onSubmit = (data: SignUpFormState) => {
     register({
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      password: data.password,
+      variables: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+      },
     })
   }
 
