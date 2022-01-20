@@ -5,6 +5,7 @@ mutation CreateMessage($channelId: UUID!, $memberId: UUID!, $text: String!) {
     }
   ) {
     message {
+      nodeId
       id
       text
       channelId

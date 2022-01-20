@@ -11,7 +11,7 @@ export type RegisterMemberMutationVariables = Types.Exact<{
 }>;
 
 
-export type RegisterMemberMutation = { __typename?: 'Mutation', registerMember?: { __typename?: 'RegisterMemberPayload', member?: { __typename?: 'Member', id: any, firstName: string, lastName: string } | null | undefined } | null | undefined };
+export type RegisterMemberMutation = { __typename?: 'Mutation', registerMember?: { __typename?: 'RegisterMemberPayload', member?: { __typename?: 'Member', nodeId: string, id: any, firstName: string, lastName: string } | null | undefined } | null | undefined };
 
 
 export const RegisterMemberDocument = gql`
@@ -20,6 +20,7 @@ export const RegisterMemberDocument = gql`
     input: {firstName: $firstName, lastName: $lastName, email: $email, password: $password}
   ) {
     member {
+      nodeId
       id
       firstName
       lastName

@@ -2560,7 +2560,7 @@ export type CreateMessageMutationVariables = Exact<{
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'CreateMessagePayload', message?: { __typename?: 'Message', id: any, text: string, channelId?: any | null | undefined, memberId?: any | null | undefined, createdAt?: any | null | undefined, updatedAt?: any | null | undefined } | null | undefined } | null | undefined };
+export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'CreateMessagePayload', message?: { __typename?: 'Message', nodeId: string, id: any, text: string, channelId?: any | null | undefined, memberId?: any | null | undefined, createdAt?: any | null | undefined, updatedAt?: any | null | undefined } | null | undefined } | null | undefined };
 
 export type RegisterMemberMutationVariables = Exact<{
   firstName: Scalars['String'];
@@ -2570,7 +2570,7 @@ export type RegisterMemberMutationVariables = Exact<{
 }>;
 
 
-export type RegisterMemberMutation = { __typename?: 'Mutation', registerMember?: { __typename?: 'RegisterMemberPayload', member?: { __typename?: 'Member', id: any, firstName: string, lastName: string } | null | undefined } | null | undefined };
+export type RegisterMemberMutation = { __typename?: 'Mutation', registerMember?: { __typename?: 'RegisterMemberPayload', member?: { __typename?: 'Member', nodeId: string, id: any, firstName: string, lastName: string } | null | undefined } | null | undefined };
 
 export type ChannelsByMemberIdQueryVariables = Exact<{
   id: Scalars['UUID'];
@@ -2582,7 +2582,7 @@ export type ChannelsByMemberIdQuery = { __typename?: 'Query', memberById?: { __t
 export type CurrentMemberQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentMemberQuery = { __typename?: 'Query', currentMember?: { __typename?: 'Member', id: any, firstName: string, lastName: string } | null | undefined };
+export type CurrentMemberQuery = { __typename?: 'Query', currentMember?: { __typename?: 'Member', nodeId: string, id: any, firstName: string, lastName: string } | null | undefined };
 
 export type GueryMessagesByChannelIdQueryVariables = Exact<{
   id: Scalars['UUID'];

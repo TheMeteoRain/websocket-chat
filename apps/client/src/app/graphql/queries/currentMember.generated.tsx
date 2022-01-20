@@ -6,12 +6,13 @@ const defaultOptions = {} as const;
 export type CurrentMemberQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type CurrentMemberQuery = { __typename?: 'Query', currentMember?: { __typename?: 'Member', id: any, firstName: string, lastName: string } | null | undefined };
+export type CurrentMemberQuery = { __typename?: 'Query', currentMember?: { __typename?: 'Member', nodeId: string, id: any, firstName: string, lastName: string } | null | undefined };
 
 
 export const CurrentMemberDocument = gql`
     query CurrentMember {
   currentMember {
+    nodeId
     id
     firstName
     lastName

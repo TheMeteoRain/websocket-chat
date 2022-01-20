@@ -13,6 +13,7 @@ mutation RegisterMember(
     }
   ) {
     member {
+      nodeId
       id
       firstName
       lastName

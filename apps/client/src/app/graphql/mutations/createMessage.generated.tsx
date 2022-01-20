@@ -10,7 +10,7 @@ export type CreateMessageMutationVariables = Types.Exact<{
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'CreateMessagePayload', message?: { __typename?: 'Message', id: any, text: string, channelId?: any | null | undefined, memberId?: any | null | undefined, createdAt?: any | null | undefined, updatedAt?: any | null | undefined } | null | undefined } | null | undefined };
+export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'CreateMessagePayload', message?: { __typename?: 'Message', nodeId: string, id: any, text: string, channelId?: any | null | undefined, memberId?: any | null | undefined, createdAt?: any | null | undefined, updatedAt?: any | null | undefined } | null | undefined } | null | undefined };
 
 
 export const CreateMessageDocument = gql`
@@ -19,6 +19,7 @@ export const CreateMessageDocument = gql`
     input: {message: {channelId: $channelId, memberId: $memberId, text: $text}}
   ) {
     message {
+      nodeId
       id
       text
       channelId
