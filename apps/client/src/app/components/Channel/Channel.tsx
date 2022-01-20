@@ -6,7 +6,6 @@ import { ChannelHeader } from './ChannelHeader'
 export type ChannelProps = ChannelChatWindowProps &
   ChannelFormProps & {
     title: React.ReactNode
-    loading?: boolean
     channelChatWindowRef?: React.MutableRefObject<HTMLElement>
   }
 
@@ -26,7 +25,6 @@ export const Channel: React.FC<ChannelProps> = (props) => {
     id,
     user,
     title,
-    loading,
     messages = [],
     handleOnSubmit,
     channelChatWindowRef,
@@ -51,7 +49,6 @@ export const Channel: React.FC<ChannelProps> = (props) => {
       <ChannelChatWindow
         user={user}
         messages={messages}
-        loading={loading}
         ref={channelChatWindowRef}
       />
       <ChannelForm id={id} handleOnSubmit={handleOnSubmit} />

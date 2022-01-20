@@ -6,7 +6,17 @@ export interface ChannelHeaderProps {}
 export const ChannelHeader: React.FC<ChannelHeaderProps> = (props) => {
   const { children } = props
 
-  return <Card>{children}</Card>
+  return (
+    <Card
+      style={{
+        display: 'flex',
+        alignItems: 'center',
+        padding: '8px',
+      }}
+    >
+      {children}
+    </Card>
+  )
 }
 
 export default ChannelHeader

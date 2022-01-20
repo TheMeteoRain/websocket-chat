@@ -1,13 +1,18 @@
+import { CircularProgress } from '@material-ui/core'
+import Avatar from '@material-ui/core/Avatar'
+import ListItemIcon from '@material-ui/core/ListItemIcon'
+import ListItemText from '@material-ui/core/ListItemText'
 import { Channel } from '@src/components/Channel'
-import { useAuth } from '@src/hooks/useAuth'
 import { useCreateMessageMutation } from '@src/graphql/mutations/createMessage.generated'
-import { useGueryMessagesByChannelIdQuery } from '@src/graphql/queries/messagesByChannelId.generated'
+import { useChannelByIdQuery } from '@src/graphql/queries/channelById.generated'
 import {
   MessageDocument,
   MessageSubscription,
   MessageSubscriptionVariables,
 } from '@src/graphql/subscriptions/message.generated'
+import { useAuth } from '@src/hooks/useAuth'
 import { useRouteMatch } from '@src/react/useRouteMatch'
+import { getUserAvatarName } from '@src/utils/user'
 import React from 'react'
 
 export interface ChannelContainerProps {}
@@ -19,9 +24,9 @@ export const ChannelContainer: React.VFC<ChannelContainerProps> = () => {
   const { current_member } = useAuth()
   const channelChatWindowRef = React.useRef<HTMLElement>(null)
 
-  const { data, loading, subscribeToMore } = useGueryMessagesByChannelIdQuery({
+  const { data, loading, subscribeToMore } = useChannelByIdQuery({
     fetchPolicy: 'cache-and-network',
-    variables: { id: channelId },
+    variables: { channelId: channelId, memberId: current_member.id },
   })
   const [createMessage] = useCreateMessageMutation()
 
@@ -53,6 +58,11 @@ export const ChannelContainer: React.VFC<ChannelContainerProps> = () => {
     if (!data) return []
     return data.channelById.messagesByChannelId.nodes.map((node) => node)
   }, [data])
+  const recipient = React.useMemo(() => {
+    return data?.channelById?.channelMembersByChannelId?.nodes.map(
+      ({ memberByMemberId }) => memberByMemberId
+    )[0]
+  }, [data])
 
   const handleOnSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     // After promise event.currentTarget is no longer available - so will save it here :)
@@ -80,15 +90,28 @@ export const ChannelContainer: React.VFC<ChannelContainerProps> = () => {
   }
 
   return (
-    <Channel
-      id={channelId}
-      handleOnSubmit={handleOnSubmit}
-      user={current_member}
-      title={'a'}
-      loading={loading}
-      messages={messages}
-      channelChatWindowRef={channelChatWindowRef}
-    />
+    <>
+      {loading && <CircularProgress />}
+      {!loading && (
+        <Channel
+          id={channelId}
+          handleOnSubmit={handleOnSubmit}
+          user={current_member}
+          title={
+            <>
+              <ListItemIcon>
+                <Avatar>{getUserAvatarName(recipient)}</Avatar>
+              </ListItemIcon>
+              <ListItemText
+                primary={`${recipient.firstName} ${recipient.lastName}`}
+              />
+            </>
+          }
+          messages={messages}
+          channelChatWindowRef={channelChatWindowRef}
+        />
+      )}
+    </>
   )
 }
 

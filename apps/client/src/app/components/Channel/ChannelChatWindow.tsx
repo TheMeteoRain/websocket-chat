@@ -2,7 +2,6 @@ import Paper from '@material-ui/core/Paper'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import React from 'react'
 import { ChannelChatMessage } from './ChannelChatMessage'
-import { CircularProgress } from '@material-ui/core'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -20,14 +19,13 @@ const useStyles = makeStyles((theme: Theme) =>
 export type ChannelChatWindowProps = {
   user: Member
   messages: any[]
-  loading?: boolean
 }
 
 export const ChannelChatWindow = React.forwardRef<
   HTMLElement,
   ChannelChatWindowProps
 >((props, ref) => {
-  const { user, messages = [], loading } = props
+  const { user, messages = [] } = props
   const classes = useStyles()
 
   return (
@@ -49,7 +47,6 @@ export const ChannelChatWindow = React.forwardRef<
           />
         )
       })}
-      {loading && <CircularProgress />}
     </Paper>
   )
 })
