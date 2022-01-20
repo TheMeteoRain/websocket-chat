@@ -1,0 +1,21 @@
+mutation RegisterMember(
+  $firstName: String!
+  $lastName: String!
+  $email: String!
+  $password: String!
+) {
+  registerMember(
+    input: {
+      firstName: $firstName
+      lastName: $lastName
+      email: $email
+      password: $password
+    }
+  ) {
+    member {
+      id
+      firstName
+      lastName
+    }
+  }
+}

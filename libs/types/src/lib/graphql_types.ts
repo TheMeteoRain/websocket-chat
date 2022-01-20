@@ -2545,6 +2545,14 @@ export type UpdateMessagePayloadMessageEdgeArgs = {
   orderBy?: InputMaybe<Array<MessagesOrderBy>>;
 };
 
+export type AuthenticateMutationVariables = Exact<{
+  email: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+
+export type AuthenticateMutation = { __typename?: 'Mutation', authenticate?: { __typename?: 'AuthenticatePayload', jwtToken?: any | null | undefined } | null | undefined };
+
 export type CreateMessageMutationVariables = Exact<{
   channelId: Scalars['UUID'];
   memberId: Scalars['UUID'];
@@ -2553,6 +2561,16 @@ export type CreateMessageMutationVariables = Exact<{
 
 
 export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'CreateMessagePayload', message?: { __typename?: 'Message', id: any, text: string, channelId?: any | null | undefined, memberId?: any | null | undefined, createdAt?: any | null | undefined, updatedAt?: any | null | undefined } | null | undefined } | null | undefined };
+
+export type RegisterMemberMutationVariables = Exact<{
+  firstName: Scalars['String'];
+  lastName: Scalars['String'];
+  email: Scalars['String'];
+  password: Scalars['String'];
+}>;
+
+
+export type RegisterMemberMutation = { __typename?: 'Mutation', registerMember?: { __typename?: 'RegisterMemberPayload', member?: { __typename?: 'Member', id: any, firstName: string, lastName: string } | null | undefined } | null | undefined };
 
 export type ChannelsByMemberIdQueryVariables = Exact<{
   id: Scalars['UUID'];
