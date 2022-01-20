@@ -1,5 +1,5 @@
 type ChannelMessage = Omit<Message, 'channelId' | 'author'> & {
-  memberId: string
+  memberId?: string
 }
 type ChannelMember = Member
 
