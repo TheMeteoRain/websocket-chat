@@ -1,17 +1,28 @@
 overwrite: true
 schema: './apps/server/src/generated/schema.graphql'
-generates:
-  # Creates the TypeScript types from the schema and any .graphql file
-  libs/types/src/lib/graphql_types.ts:
-    plugins:
-      - typescript
-      - typescript-operations
-      - typescript-urql
-    config:
-      withHOC: false
-      withComponent: false
-      withMutationFn: false
+documents: './apps/client/src/app/graphql/**/*.graphql'
 config:
   scalars:
     DateTime: 'string'
     JSON: '{ [key: string]: any }'
+generates:
+  libs/types/src/lib/graphql_types.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+    config:
+      withHOC: false
+      withComponent: false
+      withMutationFn: false
+  apps/client/src/app/graphql/index.ts:
+    preset: near-operation-file
+    presetConfig:
+      extension: .generated.tsx
+      baseTypesPath: '~@mete/types'
+    plugins:
+      - typescript-operations
+      - typescript-react-apollo
+    config:
+      withHOC: false
+      withComponent: false
+      withMutationFn: false
