@@ -7,7 +7,14 @@
       "parserOptions": {
         "project": ["apps/client/tsconfig.*?.json"]
       },
-      "rules": {}
+      "rules": {
+        "@typescript-eslint/no-empty-interface": [
+          0,
+          {
+            "allowSingleExtends": false
+          }
+        ]
+      }
     },
     {
       "files": ["*.ts", "*.tsx"],
