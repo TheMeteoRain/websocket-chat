@@ -66,7 +66,7 @@ const socialReducer: React.Reducer<
 
 const AuthProvider: React.FC<AuthProps> = ({ children }) => {
   const [state, dispatch] = React.useReducer(socialReducer, initialState)
-  const [token, setToken, removeToken] = useSessionStorageValue<string>(
+  const [token, setToken, removeToken] = useSessionStorageValue<string | null>(
     'token',
     null
   )
