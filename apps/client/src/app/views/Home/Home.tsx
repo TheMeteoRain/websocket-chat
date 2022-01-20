@@ -34,11 +34,11 @@ export const Home: React.FC<HomeProps> = (props) => {
 
   const { current_member } = useSocial()
   const { data, loading, subscribeToMore } = useChannelsByMemberIdQuery({
-    variables: { id: current_member.id },
+    variables: { id: current_member?.id },
   })
 
   React.useEffect(() => {
-    if (subscribeToMore) {
+    if (current_member?.id && subscribeToMore) {
       subscribeToMore<ChannelSubscription, ChannelSubscriptionVariables>({
         document: ChannelDocument,
         variables: { id: current_member.id },
@@ -64,7 +64,7 @@ export const Home: React.FC<HomeProps> = (props) => {
         },
       })
     }
-  }, [current_member.id, subscribeToMore])
+  }, [current_member?.id, subscribeToMore])
 
   const channels = React.useMemo(() => {
     if (!data) return []
