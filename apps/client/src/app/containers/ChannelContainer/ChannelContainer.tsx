@@ -1,5 +1,5 @@
 import { Channel } from '@src/components/Channel'
-import { useSocial } from '@src/contexts/SocialContext'
+import { useAuth } from '@src/hooks/useAuth'
 import { useCreateMessageMutation } from '@src/graphql/mutations/createMessage.generated'
 import { useGueryMessagesByChannelIdQuery } from '@src/graphql/queries/messagesByChannelId.generated'
 import {
@@ -16,7 +16,7 @@ export const ChannelContainer: React.VFC<ChannelContainerProps> = () => {
   const {
     params: { channelId },
   } = useRouteMatch()
-  const { current_member } = useSocial()
+  const { current_member } = useAuth()
   const channelChatWindowRef = React.useRef<HTMLElement>(null)
 
   const { data, loading, subscribeToMore } = useGueryMessagesByChannelIdQuery({

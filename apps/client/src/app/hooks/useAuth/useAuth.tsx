@@ -9,46 +9,40 @@ import {
   RegisterMemberMutationOptions,
   useRegisterMemberMutation,
 } from '@src/graphql/mutations/registerMember.generated'
-import {
-  useCurrentMemberLazyQuery,
-  useCurrentMemberQuery,
-} from '@src/graphql/queries/currentMember.generated'
+import { useCurrentMemberQuery } from '@src/graphql/queries/currentMember.generated'
 import React from 'react'
-import { useHistory } from 'react-router-dom'
 
-export type SocialProps = {
+export type AuthProps = {
   children: React.ReactNode
 }
 
-export type Social = {
+export type Auth = {
   register: RegisterMemberMutationHookResult[0]
   authenticate: AuthenticateMutationHookResult[0]
   logout: () => void
-} & SocialState
+} & AuthState
 
-const SocialContext = React.createContext<Required<Social> | undefined>(
-  undefined
-)
+const AuthContext = React.createContext<Required<Auth> | undefined>(undefined)
 
-export interface SocialState {
+export interface AuthState {
   current_member: Member
   isAuthenticated: boolean
   jwtToken: string
 }
-export type SocialReducerActionTypes =
+export type AuthReducerActionTypes =
   | { type: 'UPDATE_MEMBER'; payload: { member: Member } }
   | { type: 'UPDATE_JWT_TOKEN'; payload: { jwtToken: string } }
   | { type: 'CLEAR' }
 
-const initialState: SocialState = {
+const initialState: AuthState = {
   current_member: null,
   isAuthenticated: false,
   jwtToken: null,
 }
 
 const socialReducer: React.Reducer<
-  SocialState,
-  SocialReducerActionTypes | { type: '' }
+  AuthState,
+  AuthReducerActionTypes | { type: '' }
 > = (prevState, action) => {
   switch (action.type) {
     case 'UPDATE_MEMBER': {
@@ -70,7 +64,7 @@ const socialReducer: React.Reducer<
   }
 }
 
-const SocialProvider: React.FC<SocialProps> = ({ children }) => {
+const AuthProvider: React.FC<AuthProps> = ({ children }) => {
   const [state, dispatch] = React.useReducer(socialReducer, initialState)
   const [token, setToken, removeToken] = useSessionStorageValue<string>(
     'token',
@@ -146,7 +140,7 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
   }, [removeToken])
 
   return (
-    <SocialContext.Provider
+    <AuthContext.Provider
       value={{
         register,
         logout,
@@ -155,17 +149,17 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
       }}
     >
       {children}
-    </SocialContext.Provider>
+    </AuthContext.Provider>
   )
 }
 
-const useSocial = () => {
-  const context = React.useContext(SocialContext)
+const useAuth = () => {
+  const context = React.useContext(AuthContext)
   if (context === undefined) {
-    throw new Error('useSocial must be used within a SocialProvider')
+    throw new Error('useAuth must be used within a AuthProvider')
   }
 
   return context
 }
 
-export { SocialContext, SocialProvider, useSocial }
+export { AuthContext, AuthProvider, useAuth }

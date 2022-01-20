@@ -1,7 +1,7 @@
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import { ChannelDrawer } from '@src/components'
 import { ChannelContainer } from '@src/containers/ChannelContainer'
-import { useSocial } from '@src/contexts/SocialContext'
+import { useAuth } from '@src/hooks/useAuth'
 import { useChannelsByMemberIdQuery } from '@src/graphql/queries/channelsByMemberId.generated'
 import {
   ChannelDocument,
@@ -30,10 +30,10 @@ export interface HomeProps extends RouteComponentProps {}
 
 export const Home: React.FC<HomeProps> = (props) => {
   const classes = useStyles()
-  const { path, url } = useRouteMatch()
+  const { path } = useRouteMatch()
 
-  const { current_member } = useSocial()
-  const { data, loading, subscribeToMore } = useChannelsByMemberIdQuery({
+  const { current_member } = useAuth()
+  const { data, subscribeToMore } = useChannelsByMemberIdQuery({
     variables: { id: current_member?.id },
   })
 

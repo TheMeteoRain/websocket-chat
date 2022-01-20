@@ -14,7 +14,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import faker from 'faker'
 import { useForm, Controller } from 'react-hook-form'
-import { useSocial } from '@src/contexts'
+import { useAuth } from '@src/hooks/useAuth'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -61,7 +61,7 @@ const signUpFormDefaultValues = (): SignUpFormState => {
 
 export const SignUp: React.FC<SignUpProps> = (props) => {
   const classes = useStyles()
-  const { register, authenticate } = useSocial()
+  const { register, authenticate } = useAuth()
   const {
     handleSubmit,
     watch,

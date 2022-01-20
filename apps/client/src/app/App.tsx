@@ -8,7 +8,7 @@ import {
 import Typography from '@material-ui/core/Typography'
 import { ErrorBoundary, LinearWithValueLabel } from '@src/components'
 import { HeaderContainer } from '@src/containers'
-import { SocialProvider, useSocial } from '@src/contexts'
+import { AuthProvider, useAuth } from '@src/hooks/useAuth'
 import React, { Suspense } from 'react'
 import {
   BrowserRouter as Router,
@@ -71,7 +71,7 @@ function Copyright() {
 
 const PrivateRoute: React.FC<RouteProps> = (props) => {
   const { children, ...rest } = props
-  const { isAuthenticated } = useSocial()
+  const { isAuthenticated } = useAuth()
 
   return (
     <Route
@@ -93,7 +93,7 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
 }
 
 const Routes = () => {
-  const { isAuthenticated } = useSocial()
+  const { isAuthenticated } = useAuth()
 
   return (
     <Router>
@@ -122,7 +122,7 @@ export const App: React.FC = () => {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <ApolloClientProvider>
-        <SocialProvider>
+        <AuthProvider>
           <HeaderContainer />
           <main className={classes.layout}>
             <ErrorBoundary>
@@ -131,7 +131,7 @@ export const App: React.FC = () => {
               </Suspense>
             </ErrorBoundary>
           </main>
-        </SocialProvider>
+        </AuthProvider>
       </ApolloClientProvider>
     </ThemeProvider>
   )
