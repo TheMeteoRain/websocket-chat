@@ -90,28 +90,25 @@ export const ChannelContainer: React.VFC<ChannelContainerProps> = () => {
   }
 
   return (
-    <>
-      {loading && <CircularProgress />}
-      {!loading && (
-        <Channel
-          id={channelId}
-          handleOnSubmit={handleOnSubmit}
-          user={current_member}
-          title={
-            <>
-              <ListItemIcon>
-                <Avatar>{getUserAvatarName(recipient)}</Avatar>
-              </ListItemIcon>
-              <ListItemText
-                primary={`${recipient.firstName} ${recipient.lastName}`}
-              />
-            </>
-          }
-          messages={messages}
-          channelChatWindowRef={channelChatWindowRef}
-        />
-      )}
-    </>
+    <Channel
+      id={channelId}
+      handleOnSubmit={handleOnSubmit}
+      user={current_member}
+      title={
+        recipient && (
+          <>
+            <ListItemIcon>
+              <Avatar>{getUserAvatarName(recipient)}</Avatar>
+            </ListItemIcon>
+            <ListItemText
+              primary={`${recipient.firstName} ${recipient.lastName}`}
+            />
+          </>
+        )
+      }
+      messages={messages}
+      channelChatWindowRef={channelChatWindowRef}
+    />
   )
 }
 
