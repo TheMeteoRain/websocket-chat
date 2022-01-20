@@ -10,113 +10,59 @@ import {
   RecordWrapper,
   useSocial,
 } from '@src/contexts/SocialContext'
+import { useCreateMessageMutation } from '@src/graphql/mutations/createMessage.generated'
+import { useGueryMessagesByChannelIdQuery } from '@src/graphql/queries/messagesByChannelId.generated'
+import {
+  MessageDocument,
+  MessageSubscription,
+  MessageSubscriptionVariables,
+} from '@src/graphql/subscriptions/message.generated'
 import { useRouteMatch } from '@src/react/useRouteMatch'
 import React from 'react'
 
-const MESSAGE_SUBSCRIPTION = gql`
-  subscription MessageSubscription($channelId: UUID!) {
-    newMessage(input: { channelId: $channelId }) {
-      message {
-        id
-        text
-        channelId
-        memberId
-        createdAt
-        updatedAt
-      }
-    }
-  }
-`
-
-export type ChannelContainerProps = unknown
+export interface ChannelContainerProps {}
 
 export const ChannelContainer: React.VFC<ChannelContainerProps> = () => {
-  const { params } = useRouteMatch()
-  const channelChatWindowRef = React.useRef<HTMLElement>(null)
   const {
-    current_member,
-    channels,
-    sendMessage,
-    getMessagesByChannelIdQuery,
-    dispatch,
-  } = useSocial()
-  const [
-    getMessageByChannelId,
-    {
-      data: getMessagesByChannelIdData,
-      loading: getMessagesByChannelIdLoading,
-      subscribeToMore: subscribeForMoreMessagesByChannelId,
-    },
-  ] = getMessagesByChannelIdQuery
+    params: { channelId },
+  } = useRouteMatch()
+  const { current_member } = useSocial()
+  const channelChatWindowRef = React.useRef<HTMLElement>(null)
 
-  const channelId = params.channelId
-  const { users, messages } = channels.find(({ id }) => id === channelId)
-  const recipient = users.find((user) => user.id !== current_member.id)
+  const { data, loading, subscribeToMore } = useGueryMessagesByChannelIdQuery({
+    fetchPolicy: 'cache-and-network',
+    variables: { id: channelId },
+  })
+  const [createMessage] = useCreateMessageMutation()
 
   React.useEffect(() => {
-    getMessageByChannelId({ variables: { id: channelId } })
-  }, [getMessageByChannelId, channelId])
-
-  React.useEffect(() => {
-    dispatch({
-      type: 'UPDATE_CHANNEL_MESSAGES',
-      payload: {
-        channelId: channelId,
-        messages: getMessagesByChannelIdData?.channelById?.messagesByChannelId?.edges.flatMap(
-          (messagesEdge) => messagesEdge.node
-        ),
-      },
-    })
-  }, [
-    channelId,
-    dispatch,
-    getMessagesByChannelIdData?.channelById?.messagesByChannelId?.edges,
-  ])
-
-  React.useLayoutEffect(() => {
-    let unsubscribe: () => void
-
-    if (subscribeForMoreMessagesByChannelId) {
-      unsubscribe = subscribeForMoreMessagesByChannelId<
-        RecordWrapper<'newMessage', MessageSubscriptionPayload>,
-        MessageSubscriptionInput
-      >({
-        document: MESSAGE_SUBSCRIPTION,
-        variables: { channelId: channelId },
+    if (subscribeToMore) {
+      subscribeToMore<MessageSubscription, MessageSubscriptionVariables>({
+        document: MessageDocument,
+        variables: { channelId },
         updateQuery: (prev, { subscriptionData }) => {
-          if (
-            prev.channelById.messagesByChannelId.edges.find(
-              (edge) =>
-                edge.node.id === subscriptionData.data.newMessage.message.id
-            )
-          )
-            return prev
-
-          const next: QueryChannelByIdData = {
+          return {
             ...prev,
             channelById: {
               ...prev.channelById,
               messagesByChannelId: {
                 ...prev.channelById.messagesByChannelId,
-                edges: [
-                  ...prev.channelById.messagesByChannelId.edges,
-                  {
-                    node: subscriptionData.data.newMessage.message,
-                  },
+                nodes: [
+                  ...prev.channelById.messagesByChannelId.nodes,
+                  subscriptionData.data.newMessage.message,
                 ],
               },
             },
           }
-
-          return next
         },
       })
     }
+  }, [channelId, subscribeToMore])
 
-    return () => {
-      if (unsubscribe) unsubscribe()
-    }
-  }, [subscribeForMoreMessagesByChannelId, channelId])
+  const messages = React.useMemo(() => {
+    if (!data) return []
+    return data.channelById.messagesByChannelId.nodes.map((node) => node)
+  }, [data])
 
   const handleOnSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     // After promise event.currentTarget is no longer available - so will save it here :)
@@ -125,14 +71,20 @@ export const ChannelContainer: React.VFC<ChannelContainerProps> = () => {
     const message = formData.get('message') as string
 
     if (message) {
-      const sentMessage = await sendMessage({
-        text: message,
-        memberId: current_member.id,
-        channelId,
+      const { data, errors } = await createMessage({
+        variables: {
+          text: message,
+          memberId: current_member.id,
+          channelId,
+        },
       })
 
-      if (sentMessage) {
+      if (data) {
         currentTarget.reset()
+      }
+
+      if (errors) {
+        console.error(errors)
       }
     }
   }
@@ -142,7 +94,8 @@ export const ChannelContainer: React.VFC<ChannelContainerProps> = () => {
       id={channelId}
       handleOnSubmit={handleOnSubmit}
       user={current_member}
-      recipient={recipient}
+      title={'a'}
+      loading={loading}
       messages={messages}
       channelChatWindowRef={channelChatWindowRef}
     />

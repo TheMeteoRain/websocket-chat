@@ -2,12 +2,12 @@ import React from 'react'
 import { Member, useSocial } from '@src/contexts/SocialContext/SocialContext'
 import { ChannelChatWindow, ChannelChatWindowProps } from './ChannelChatWindow'
 import { ChannelForm, ChannelFormProps } from './ChannelForm'
-import { ChannelUser, ChannelUserProps } from './ChannelUser'
+import { ChannelHeader } from './ChannelHeader'
 
 export type ChannelProps = ChannelChatWindowProps &
-  ChannelFormProps &
-  ChannelUserProps & {
-    recipient: Member
+  ChannelFormProps & {
+    title: React.ReactNode
+    loading?: boolean
     channelChatWindowRef?: React.MutableRefObject<HTMLElement>
   }
 
@@ -22,14 +22,16 @@ const isScrolledToBottomOfHTMLElement = (htmlElement: HTMLElement) => {
   )
 }
 
-export const Channel: React.FC<ChannelProps> = ({
-  id,
-  user,
-  recipient,
-  messages = [],
-  handleOnSubmit,
-  channelChatWindowRef,
-}) => {
+export const Channel: React.FC<ChannelProps> = (props) => {
+  const {
+    id,
+    user,
+    title,
+    loading,
+    messages = [],
+    handleOnSubmit,
+    channelChatWindowRef,
+  } = props
   const firstUpdate = React.useRef(true)
 
   React.useLayoutEffect(() => {
@@ -46,10 +48,11 @@ export const Channel: React.FC<ChannelProps> = ({
 
   return (
     <React.Fragment>
-      <ChannelUser user={recipient} />
+      <ChannelHeader>{title}</ChannelHeader>
       <ChannelChatWindow
         user={user}
         messages={messages}
+        loading={loading}
         ref={channelChatWindowRef}
       />
       <ChannelForm id={id} handleOnSubmit={handleOnSubmit} />

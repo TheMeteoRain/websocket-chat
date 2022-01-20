@@ -9,7 +9,6 @@ import Toolbar from '@material-ui/core/Toolbar'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { getUserAvatarName } from '@src/utils/user'
-import { Channel, Member } from '@src/contexts/SocialContext'
 
 const drawerWidth = 240
 
@@ -54,8 +53,8 @@ export const ChannelDrawer: React.FC<ChannelDrawerProps> = ({
       <Toolbar />
       <div className={classes.drawerContainer}>
         <List>
-          {channels.map(({ id: channelId, users }, _index) => {
-            const recipient = users.find((user) => user.id !== myUser.id)
+          {channels.map(({ id: channelId, members }, _index) => {
+            const recipient = members.find((member) => member.id !== myUser.id)
             const { firstName, lastName } = recipient
 
             const avatarName = getUserAvatarName(recipient)

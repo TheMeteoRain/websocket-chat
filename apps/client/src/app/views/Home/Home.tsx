@@ -13,119 +13,20 @@ import {
   GraphqlHelpQuery,
   QueryMemberByIdData,
   useSocial,
-  Channel,
 } from '@src/contexts/SocialContext'
 import { ChannelContainer } from '@src/containers/ChannelContainer'
 import { gql, useQuery } from '@apollo/client'
 import { ChannelSubscriptionPayload, MemberInput } from '@mete/types'
+import { useChannelsByMemberIdQuery } from '@src/graphql/queries/channelsByMemberId.generated'
+import {
+  ChannelDocument,
+  ChannelSubscription,
+  ChannelSubscriptionVariables,
+} from '@src/graphql/subscriptions/channel.generated'
+import { CircularProgress } from '@material-ui/core'
 
 const drawerWidth = 240
 
-const QUERY_CHANNELS_BY_USER_ID = gql`
-  query QueryMemberById($id: UUID!) {
-    memberById(id: $id) {
-      channelMembersByMemberId {
-        nodes {
-          nodeId
-          channelId
-          channelByChannelId {
-            messagesByChannelId(last: 50) {
-              nodes {
-                id
-                nodeId
-                memberId
-                text
-                createdAt
-                updatedAt
-              }
-            }
-            channelMembersByChannelId(
-              filter: { memberId: { notEqualTo: $id } }
-            ) {
-              nodes {
-                memberByMemberId {
-                  firstName
-                  lastName
-                  id
-                  nodeId
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`
-
-const CHANNEL_SUBSCRIPTION = gql`
-  subscription ChannelSubscription($id: UUID!) {
-    newChannel {
-      event
-      channel {
-        channelMembersByChannelId(filter: { memberId: { notEqualTo: $id } }) {
-          nodes {
-            channelByChannelId {
-              channelMembersByChannelId(
-                filter: { memberId: { notEqualTo: $id } }
-              ) {
-                nodes {
-                  nodeId
-                  channelId
-                  channelByChannelId {
-                    messagesByChannelId(last: 50) {
-                      nodes {
-                        id
-                        nodeId
-                        memberId
-                        text
-                        createdAt
-                        updatedAt
-                      }
-                    }
-                    channelMembersByChannelId(
-                      filter: { memberId: { notEqualTo: $id } }
-                    ) {
-                      nodes {
-                        memberByMemberId {
-                          firstName
-                          lastName
-                          id
-                          nodeId
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-`
-
-const channelsByMemberIdToChannelObject = (
-  data: QueryMemberByIdData
-): Channel[] => {
-  return data.memberById.channelMembersByMemberId.nodes.flatMap(
-    (channelMember) => {
-      const { channelId, channelByChannelId, nodeId } = channelMember
-
-      return {
-        id: channelId,
-        nodeId,
-        users: channelByChannelId.channelMembersByChannelId.nodes.flatMap(
-          (channelMember) => channelMember.memberByMemberId
-        ),
-        messages: channelByChannelId.messagesByChannelId.nodes.flatMap(
-          (message) => message
-        ),
-      }
-    }
-  )
-}
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
     root: {
@@ -134,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) =>
     content: {
       flexGrow: 1,
       padding: theme.spacing(3),
-      marginTop: theme.spacing(8),
+      marginTop: theme.spacing(10),
     },
   })
 )
@@ -145,38 +46,18 @@ export const Home: React.FC<HomeProps> = (props) => {
   const classes = useStyles()
   const { path, url } = useRouteMatch()
 
-  const {
-    current_member,
-    channels = [],
-    logout,
-    getChannels,
-    dispatch,
-  } = useSocial()
-  const { data, loading, subscribeToMore, called } = useQuery<
-    QueryMemberByIdData,
-    Required<Pick<MemberInput, 'id'>>
-  >(QUERY_CHANNELS_BY_USER_ID, { variables: { id: current_member.id } })
-
-  React.useLayoutEffect(() => {
-    if (data?.memberById) {
-      dispatch({
-        type: 'UPDATE_CHANNELS',
-        payload: {
-          channels: channelsByMemberIdToChannelObject(data),
-        },
-      })
-    }
-  }, [data, dispatch])
+  const { current_member } = useSocial()
+  const { data, loading, subscribeToMore } = useChannelsByMemberIdQuery({
+    variables: { id: current_member.id },
+  })
 
   React.useEffect(() => {
     if (subscribeToMore) {
-      subscribeToMore<
-        GraphqlHelpQuery<'newChannel', ChannelSubscriptionPayload>
-      >({
-        document: CHANNEL_SUBSCRIPTION,
+      subscribeToMore<ChannelSubscription, ChannelSubscriptionVariables>({
+        document: ChannelDocument,
         variables: { id: current_member.id },
         updateQuery: (prev, { subscriptionData }) => {
-          const next: QueryMemberByIdData = {
+          return {
             ...prev,
             ...{
               memberById: {
@@ -194,12 +75,38 @@ export const Home: React.FC<HomeProps> = (props) => {
               },
             },
           }
-
-          return next
         },
       })
     }
   }, [current_member.id, subscribeToMore])
+
+  const channels = React.useMemo(() => {
+    if (!data) return []
+    return data.memberById.channelMembersByMemberId.nodes.map(
+      (node): Channel => {
+        return {
+          id: node.channelId,
+          nodeId: node.nodeId,
+          messages: node.channelByChannelId.messagesByChannelId.nodes.map(
+            ({ id, nodeId, memberId, text }) => ({
+              id,
+              nodeId,
+              authorId: memberId,
+              text,
+            })
+          ),
+          members: node.channelByChannelId.channelMembersByChannelId.nodes.map(
+            ({ memberByMemberId: { firstName, lastName, id, nodeId } }) => ({
+              id,
+              nodeId,
+              firstName,
+              lastName,
+            })
+          ),
+        }
+      }
+    )
+  }, [data])
 
   return (
     <div className={classes.root}>
@@ -207,9 +114,7 @@ export const Home: React.FC<HomeProps> = (props) => {
 
       <main className={classes.content}>
         <Switch>
-          <Route exact path={path}>
-            <div>TYHJÄ</div>
-          </Route>
+          <Route exact path={path}></Route>
           <Route path={`${path}/:channelId/messages`}>
             <ChannelContainer />
           </Route>
