@@ -7,7 +7,11 @@
     "noUnusedParameters": false,
     "noUnusedLocals": false,
     "noImplicitAny": false,
-    "typeRoots": ["node_modules/@types", "src/react-app-env.d.ts"],
+    "typeRoots": [
+      "node_modules/@types",
+      "src/react-app-env.d.ts",
+      "src/app/@types"
+    ],
     "paths": {
       "@src/*": ["apps/client/src/app/*"],
       "@mete/types": ["libs/types/src/index.ts"]
