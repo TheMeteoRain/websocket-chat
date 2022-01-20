@@ -2572,6 +2572,14 @@ export type RegisterMemberMutationVariables = Exact<{
 
 export type RegisterMemberMutation = { __typename?: 'Mutation', registerMember?: { __typename?: 'RegisterMemberPayload', member?: { __typename?: 'Member', nodeId: string, id: any, firstName: string, lastName: string } | null | undefined } | null | undefined };
 
+export type ChannelByIdQueryVariables = Exact<{
+  channelId: Scalars['UUID'];
+  memberId: Scalars['UUID'];
+}>;
+
+
+export type ChannelByIdQuery = { __typename?: 'Query', channelById?: { __typename?: 'Channel', channelMembersByChannelId: { __typename?: 'ChannelMembersConnection', nodes: Array<{ __typename?: 'ChannelMember', memberByMemberId?: { __typename?: 'Member', nodeId: string, id: any, firstName: string, lastName: string } | null | undefined } | null | undefined> }, messagesByChannelId: { __typename?: 'MessagesConnection', nodes: Array<{ __typename?: 'Message', nodeId: string, id: any, text: string, memberId?: any | null | undefined, createdAt?: any | null | undefined, updatedAt?: any | null | undefined } | null | undefined> } } | null | undefined };
+
 export type ChannelsByMemberIdQueryVariables = Exact<{
   id: Scalars['UUID'];
 }>;
@@ -2583,13 +2591,6 @@ export type CurrentMemberQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CurrentMemberQuery = { __typename?: 'Query', currentMember?: { __typename?: 'Member', nodeId: string, id: any, firstName: string, lastName: string } | null | undefined };
-
-export type GueryMessagesByChannelIdQueryVariables = Exact<{
-  id: Scalars['UUID'];
-}>;
-
-
-export type GueryMessagesByChannelIdQuery = { __typename?: 'Query', channelById?: { __typename?: 'Channel', messagesByChannelId: { __typename?: 'MessagesConnection', nodes: Array<{ __typename?: 'Message', nodeId: string, id: any, text: string, memberId?: any | null | undefined, createdAt?: any | null | undefined, updatedAt?: any | null | undefined } | null | undefined> } } | null | undefined };
 
 export type ChannelSubscriptionVariables = Exact<{
   id: Scalars['UUID'];

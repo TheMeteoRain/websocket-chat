@@ -1,0 +1,24 @@
+query ChannelById($channelId: UUID!, $memberId: UUID!) {
+  channelById(id: $channelId) {
+    channelMembersByChannelId(filter: { memberId: { notEqualTo: $memberId } }) {
+      nodes {
+        memberByMemberId {
+          nodeId
+          id
+          firstName
+          lastName
+        }
+      }
+    }
+    messagesByChannelId(orderBy: UPDATED_AT_ASC) {
+      nodes {
+        nodeId
+        id
+        text
+        memberId
+        createdAt
+        updatedAt
+      }
+    }
+  }
+}
