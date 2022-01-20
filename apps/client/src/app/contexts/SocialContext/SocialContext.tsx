@@ -36,7 +36,7 @@ export interface SocialState {
   jwtToken: string
 }
 export type SocialReducerActionTypes =
-  | { type: 'UPDATE_CURRENT_MEMBER'; payload: { member: Member } }
+  | { type: 'UPDATE_MEMBER'; payload: { member: Member } }
   | { type: 'UPDATE_JWT_TOKEN'; payload: { jwtToken: string } }
   | { type: 'CLEAR' }
 
@@ -51,7 +51,7 @@ const socialReducer: React.Reducer<
   SocialReducerActionTypes | { type: '' }
 > = (prevState, action) => {
   switch (action.type) {
-    case 'UPDATE_CURRENT_MEMBER': {
+    case 'UPDATE_MEMBER': {
       return { ...prevState, current_member: action.payload.member }
     }
     case 'UPDATE_JWT_TOKEN': {
@@ -72,7 +72,10 @@ const socialReducer: React.Reducer<
 
 const SocialProvider: React.FC<SocialProps> = ({ children }) => {
   const [state, dispatch] = React.useReducer(socialReducer, initialState)
-  const [token, setToken, removeToken] = useSessionStorageValue('token', null)
+  const [token, setToken, removeToken] = useSessionStorageValue<string>(
+    'token',
+    null
+  )
   const [registerMemberFn] = useRegisterMemberMutation()
   const [authenticateMemberFn] = useAuthenticateMutation()
   const { data } = useCurrentMemberQuery({
@@ -82,7 +85,7 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
   React.useEffect(() => {
     if (data?.currentMember) {
       dispatch({
-        type: 'UPDATE_CURRENT_MEMBER',
+        type: 'UPDATE_MEMBER',
         payload: { member: data?.currentMember },
       })
     }
@@ -98,6 +101,10 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
     },
     [setToken]
   )
+
+  React.useEffect(() => {
+    if (token) setJWTToken(token)
+  }, [setJWTToken, token])
 
   const authenticateFn = React.useCallback(
     async (options: AuthenticateMutationOptions) => {
@@ -124,7 +131,7 @@ const SocialProvider: React.FC<SocialProps> = ({ children }) => {
       })
 
       dispatch({
-        type: 'UPDATE_CURRENT_MEMBER',
+        type: 'UPDATE_MEMBER',
         payload: { member: registerMember?.member },
       })
 
