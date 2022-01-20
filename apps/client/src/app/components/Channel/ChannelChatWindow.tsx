@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export type ChannelChatWindowProps = {
   user: Member
-  messages: any[]
+  messages: ChannelMessage[]
 }
 
 export const ChannelChatWindow = React.forwardRef<
