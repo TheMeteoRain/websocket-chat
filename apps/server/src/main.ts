@@ -29,6 +29,7 @@ app.use(postgraphile())
 app.listen(PORT, () => {
   console.log(`✨ Listening on port ${PORT}`)
   console.log(`🚀 http://localhost:${PORT}`)
-  if (NODE_ENV === 'development')
-    console.log(`🚀 http://localhost:${PORT}/graphile`)
+  if (NODE_ENV === 'development') {
+    console.log(`🚀 http://localhost:${PORT}/graphiql`)
+  }
 })
