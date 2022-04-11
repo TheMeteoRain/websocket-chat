@@ -1,0 +1,11 @@
+# Build base image for local development
+
+version: '3.8'
+
+services:
+  base:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    profiles:
+      - donotstart
