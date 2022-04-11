@@ -9,18 +9,18 @@ build:
       - .yarn-lock
   script:
     - docker ps
-    - docker-compose --help
     - echo "Build stage"
     - echo "raspberrypi gets slow while installing packages, hence extra timeout"
     - echo "cypress does not support raspberrypi, cypress is the only optional dependency"
     - yarn install --network-timeout 500000 --ignore-optional
     - ls
     - HEROKU_API_KEY=$HEROKU_API_TOKEN yarn heroku container:login
+    - export NODE_ENV=production
     - yarn nx run-many --target=build --projects=client,server --prod
-    - docker-compose build
-    - docker tag websocket-chat_chat_server registry.heroku.com/mete-websocket-server/web
+    - docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
+    - docker tag websocket-chat_server registry.heroku.com/mete-websocket-server/web
     - docker push registry.heroku.com/mete-websocket-server/web
-    - docker tag websocket-chat_chat_client registry.heroku.com/mete-websocket-client/web
+    - docker tag websocket-chat_client registry.heroku.com/mete-websocket-client/web
     - docker push registry.heroku.com/mete-websocket-client/web
     - yarn heroku container:release web -a mete-websocket-server
     - yarn heroku container:release web -a mete-websocket-client
