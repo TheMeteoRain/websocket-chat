@@ -1,0 +1,19 @@
+# ------------------------------------------------------
+# Builder image
+# ------------------------------------------------------
+FROM websocket-chat_base as builder
+
+ENV NODE_ENV production
+RUN [ "yarn", "nx", "build", "client"]
+
+# ------------------------------------------------------
+# Production image
+# ------------------------------------------------------
+FROM nginx:1.21.0-alpine
+
+COPY --from=builder /usr/src/dist/apps/client /usr/share/nginx/html
+COPY --from=builder /usr/src/nginx.conf /etc/nginx/templates/default.conf.template
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,0 +1,23 @@
+# ------------------------------------------------------
+# Builder image
+# ------------------------------------------------------
+FROM websocket-chat_base as builder
+
+ENV NODE_ENV production
+RUN [ "yarn", "nx", "build", "server"]
+
+# ------------------------------------------------------
+# Production image
+# ------------------------------------------------------
+FROM node:16.14.2-alpine3.15
+
+USER node
+ENV NODE_ENV production
+WORKDIR /usr/apps
+COPY --from=builder --chown=node:node ["/usr/src/dist/apps/server", "./server"]
+COPY --from=builder --chown=node:node ["/usr/src/dist/apps/migration", "./migration"]
+COPY --from=builder --chown=node:node ["/usr/src/shell/*", "."]
+RUN ["yarn", "--cwd", "migration", "install", "--production"]
+RUN ["yarn", "--cwd", "server", "install", "--production"]
+
+ENTRYPOINT [ "./entrypoint.sh" ]
