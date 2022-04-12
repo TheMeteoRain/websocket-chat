@@ -14,7 +14,7 @@ build:
     - echo "cypress does not support raspberrypi, cypress is the only optional dependency"
     - yarn install --network-timeout 500000 --ignore-optional
     - ls
-    - HEROKU_API_KEY=$HEROKU_API_TOKEN yarn heroku container:login
+    - HEROKU_API_KEY=$HEROKU_API_KEY yarn heroku container:login
     - export NODE_ENV=production
     - yarn nx run-many --target=build --projects=client,server --prod
     - docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
