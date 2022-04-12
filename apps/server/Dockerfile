@@ -1,7 +1,9 @@
 # ------------------------------------------------------
 # Production image
 # ------------------------------------------------------
-FROM node:16.14.2-alpine3.15
+# This version is not working in raspberrypi
+#FROM node:16.14.2-alpine3.15
+FROM node:16.3.0-alpine3.12
 
 USER node
 ENV NODE_ENV production
