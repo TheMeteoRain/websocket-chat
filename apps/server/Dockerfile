@@ -5,6 +5,9 @@
 #FROM node:16.14.2-alpine3.15
 FROM node:16.3.0-alpine3.12
 
+RUN ["apk", "--update-cache", "upgrade"]
+RUN ["apk", "add", "bash"]
+
 USER node
 ENV NODE_ENV production
 WORKDIR /usr/apps
