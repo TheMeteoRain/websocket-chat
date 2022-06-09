@@ -17,7 +17,7 @@ build:
     - HEROKU_API_KEY=$HEROKU_API_KEY yarn heroku container:login
     - export NODE_ENV=production
     - yarn nx run-many --target=build --projects=client,server --prod
-    - docker-compose -f docker-compose.yml -f docker-compose.prod.yml build
+    - docker buildx bake --set "*.platform=linux/amd64" -f docker-compose.yml -f docker-compose.prod.yml
     - docker tag websocket-chat_server registry.heroku.com/mete-websocket-server/web
     - docker push registry.heroku.com/mete-websocket-server/web
     - docker tag websocket-chat_client registry.heroku.com/mete-websocket-client/web
