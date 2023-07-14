@@ -12,18 +12,21 @@ import { onError } from '@apollo/client/link/error'
 import { useSessionStorageValue } from '@react-hookz/web'
 import faker from 'faker'
 import React from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
-const {
-  NX_API_SCHEME_WS,
-  NX_API_SCHEME_HTTP,
-  NX_API_HOST,
-  NX_API_ENDPOINT,
-} = process.env
+const { NX_API_SCHEME_WS, NX_API_SCHEME_HTTP, NX_API_HOST, NX_API_ENDPOINT } =
+  process.env
 
-export const ApolloClientProvider: React.FC = ({ children }) => {
+export interface ApolloClientProviderProps {
+  children: React.ReactNode
+}
+
+export const ApolloClientProvider: React.FC<ApolloClientProviderProps> = (
+  props
+) => {
+  const { children } = props
   const [token] = useSessionStorageValue('token', null)
-  const history = useHistory()
+  // const navigate = useNavigate()
 
   const hasSubscriptionOperation = ({ query: { definitions } }: Operation) =>
     definitions.some(
@@ -53,7 +56,7 @@ export const ApolloClientProvider: React.FC = ({ children }) => {
           extensions?.code === 'invalid-jwt' || message.includes('JWTExpired')
       )
     ) {
-      history.push('/register')
+      // navigate('/register')
     }
   })
 
@@ -64,7 +67,7 @@ export const ApolloClientProvider: React.FC = ({ children }) => {
       options: {
         reconnect: true,
         connectionParams: {
-          uuid: faker.random.uuid(),
+          uuid: faker.datatype.uuid(),
           ...(token ? { Authorization: `Bearer ${token}` } : null),
         },
       },

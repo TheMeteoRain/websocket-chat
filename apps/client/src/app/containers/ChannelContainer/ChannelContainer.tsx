@@ -11,19 +11,17 @@ import {
   MessageSubscriptionVariables,
 } from '@src/graphql/subscriptions/message.generated'
 import { useAuth } from '@src/hooks/useAuth'
-import { useRouteMatch } from '@src/react/useRouteMatch'
+import { useParams } from '@src/react/useParams'
 import { getUserAvatarName } from '@src/utils/user'
 import React from 'react'
 
 export interface ChannelContainerProps {}
 
-export const ChannelContainer: React.VFC<ChannelContainerProps> = () => {
-  const {
-    params: { channelId },
-  } = useRouteMatch()
+export const ChannelContainer: React.FC<ChannelContainerProps> = () => {
+  const { channelId } = useParams()
   const { current_member } = useAuth()
   const channelChatWindowRef = React.useRef<HTMLElement>(null)
-
+  console.log({ channelId })
   const { data, loading, subscribeToMore } = useChannelByIdQuery({
     fetchPolicy: 'cache-and-network',
     variables: { channelId: channelId, memberId: current_member.id },

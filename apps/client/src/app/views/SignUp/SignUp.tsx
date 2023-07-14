@@ -15,6 +15,7 @@ import Container from '@material-ui/core/Container'
 import faker from 'faker'
 import { useForm, Controller } from 'react-hook-form'
 import { useAuth } from '@src/hooks/useAuth'
+import { RouteProps } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -43,7 +44,7 @@ export interface SignUpFormState {
   password?: string
 }
 
-export interface SignUpProps extends RouteComponentProps {}
+export interface SignUpProps {}
 
 const signUpFormDefaultValues = (): SignUpFormState => {
   const firstName = faker.name.firstName(

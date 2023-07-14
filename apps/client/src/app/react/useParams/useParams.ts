@@ -1,14 +1,12 @@
-import { useRouteMatch as useReactRouteMatch } from 'react-router-dom'
+import { useParams as useReactParams } from 'react-router-dom'
 
-interface UseRouteMatchParams {
-  channelId?: string
+type UseParams = Record<'channelId', string>
+
+export const useParams = () => {
+  return useReactParams<UseParams>()
 }
 
-export const useRouteMatch = () => {
-  return useReactRouteMatch<UseRouteMatchParams>()
-}
-
-export default useRouteMatch
+export default useParams
 // export function useRouteMatch<Params extends { [K in keyof UseRouteMatchParams]?: string } = unknown>(): match<Params>;
 // export function useRouteMatch<Params extends { [K in keyof UseRouteMatchParams]?: string } = unknown>(
 //     path: string | string[] | RouteProps,

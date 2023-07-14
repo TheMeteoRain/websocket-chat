@@ -1,16 +1,16 @@
 /// <reference types="react-scripts" />
 /// <reference types="react-router" />
 
-interface RouteComponentParamProps {
-  channelId?: string
-}
+// interface RouteComponentParamProps {
+//   channelId?: string
+// }
 
-declare interface RouteComponentProps
-  extends import('react-router')
-    .RouteComponentProps<RouteComponentParamProps> {}
+// declare interface RouteComponentProps
+//   extends import('react-router')
+//     .RouteComponentProps<RouteComponentParamProps> {}
 
-declare interface RouteProps
-  extends import('react-router').RouteProps<string, RouteComponentParamProps> {}
+// declare interface RouteProps
+//   extends import('react-router').RouteProps<string, RouteComponentParamProps> {}
 
 declare namespace NodeJS {
   interface ProcessEnv {

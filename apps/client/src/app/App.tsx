@@ -12,15 +12,15 @@ import { AuthProvider, useAuth } from '@src/hooks/useAuth'
 import React, { Suspense } from 'react'
 import {
   BrowserRouter as Router,
-  Redirect,
+  Navigate,
   Route,
-  Switch,
+  Routes,
+  RouteProps,
 } from 'react-router-dom'
 import { ApolloClientProvider } from './providers'
 
 const Home = React.lazy(() => {
   return new Promise((resolve) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     setTimeout(() => resolve(import('@src/views/Home/Home')), 2000)
   })
@@ -28,7 +28,6 @@ const Home = React.lazy(() => {
 
 const SignUp = React.lazy(() => {
   return new Promise((resolve) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     setTimeout(() => resolve(import('@src/views/SignUp/SignUp')), 2000)
   })
@@ -36,7 +35,6 @@ const SignUp = React.lazy(() => {
 
 const NotFound = React.lazy(() => {
   return new Promise((resolve) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     setTimeout(() => resolve(import('@src/views/NotFound/NotFound')), 2000)
   })
@@ -69,48 +67,43 @@ function Copyright() {
   )
 }
 
-const PrivateRoute: React.FC<RouteProps> = (props) => {
-  const { children, ...rest } = props
-  const { isAuthenticated } = useAuth()
-
-  return (
-    <Route
-      {...rest}
-      render={({ location }) =>
-        isAuthenticated ? (
-          children
-        ) : (
-          <Redirect
-            to={{
-              pathname: '/',
-              state: { from: location },
-            }}
-          />
-        )
-      }
-    />
-  )
+export interface ProtectedRouteProps {
+  children: React.ReactNode
 }
 
-const Routes = () => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = (props) => {
+  const { children } = props
   const { isAuthenticated } = useAuth()
+
+  if (!isAuthenticated) {
+    return <Navigate to={'/'} />
+  }
+
+  return children
+}
+
+const AppRoutes = () => {
+  const { isAuthenticated } = useAuth()
+  console.log({ isAuthenticated })
 
   return (
     <Router>
-      <Switch>
-        <Route exact path='/'>
-          {isAuthenticated ? <Redirect to='/channel' /> : <SignUp />}
-        </Route>
-
-        <PrivateRoute
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          //@ts-ignore
-          path='/channel'
-        >
-          <Home />
-        </PrivateRoute>
-        <Route component={NotFound} path='/404' />
-      </Switch>
+      <Routes>
+        <Route
+          path='/'
+          element={isAuthenticated ? <Navigate to={'/channel'} /> : <SignUp />}
+        />
+        <Route
+          index
+          path='/channel/*'
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route path='/404' Component={NotFound} />
+      </Routes>
     </Router>
   )
 }
@@ -127,7 +120,7 @@ export const App: React.FC = () => {
           <main className={classes.layout}>
             <ErrorBoundary>
               <Suspense fallback={<LinearWithValueLabel />}>
-                <Routes />
+                <AppRoutes />
               </Suspense>
             </ErrorBoundary>
           </main>

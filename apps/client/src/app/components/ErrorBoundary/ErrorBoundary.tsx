@@ -1,6 +1,8 @@
 import React, { ErrorInfo } from 'react'
 
-export type ErrorBoundaryProps = unknown
+export type ErrorBoundaryProps = {
+  children: React.ReactNode
+}
 export type ErrorBoundaryState = {
   error: Error | undefined
   errorInfo: ErrorInfo | undefined

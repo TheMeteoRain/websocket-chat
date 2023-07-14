@@ -1,19 +1,19 @@
-import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
+import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { ChannelDrawer } from '@src/components'
 import { ChannelContainer } from '@src/containers/ChannelContainer'
-import { useAuth } from '@src/hooks/useAuth'
 import { useChannelsByMemberIdQuery } from '@src/graphql/queries/channelsByMemberId.generated'
 import {
   ChannelDocument,
   ChannelSubscription,
   ChannelSubscriptionVariables,
 } from '@src/graphql/subscriptions/channel.generated'
+import { useAuth } from '@src/hooks/useAuth'
 import React from 'react'
-import { Route, Switch, useRouteMatch } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom'
 
 const drawerWidth = 240
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     root: {
       display: 'flex',
@@ -26,12 +26,10 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 )
 
-export interface HomeProps extends RouteComponentProps {}
+export interface HomeProps {}
 
 export const Home: React.FC<HomeProps> = (props) => {
   const classes = useStyles()
-  const { path } = useRouteMatch()
-
   const { current_member } = useAuth()
   const { data, subscribeToMore } = useChannelsByMemberIdQuery({
     variables: { id: current_member?.id },
@@ -99,12 +97,10 @@ export const Home: React.FC<HomeProps> = (props) => {
       <ChannelDrawer channels={channels} myUser={current_member} />
 
       <main className={classes.content}>
-        <Switch>
-          <Route exact path={path}></Route>
-          <Route path={`${path}/:channelId/messages`}>
-            <ChannelContainer />
-          </Route>
-        </Switch>
+        <Routes>
+          <Route path={'/'} element={<div>CHANNEL</div>} />
+          <Route path={'/:channelId/messages'} Component={ChannelContainer} />
+        </Routes>
       </main>
     </div>
   )

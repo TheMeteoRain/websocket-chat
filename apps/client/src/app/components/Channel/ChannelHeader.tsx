@@ -1,7 +1,9 @@
 import Card from '@material-ui/core/Card'
 import React from 'react'
 
-export interface ChannelHeaderProps {}
+export interface ChannelHeaderProps {
+  children: React.ReactNode
+}
 
 export const ChannelHeader: React.FC<ChannelHeaderProps> = (props) => {
   const { children } = props
