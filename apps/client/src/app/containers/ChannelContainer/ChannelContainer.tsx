@@ -28,26 +28,30 @@ export const ChannelContainer: React.FC<ChannelContainerProps> = () => {
   const [createMessage] = useCreateMessageMutation()
 
   React.useEffect(() => {
-    if (subscribeToMore) {
-      subscribeToMore<MessageSubscription, MessageSubscriptionVariables>({
-        document: MessageDocument,
-        variables: { channelId },
-        updateQuery: (prev, { subscriptionData }) => {
-          return {
-            ...prev,
-            channelById: {
-              ...prev.channelById,
-              messagesByChannelId: {
-                ...prev.channelById.messagesByChannelId,
-                nodes: [
-                  ...prev.channelById.messagesByChannelId.nodes,
-                  subscriptionData.data.newMessage.message,
-                ],
-              },
+    let unsubscribe: ReturnType<typeof subscribeToMore>
+
+    unsubscribe = subscribeToMore<MessageSubscription, MessageSubscriptionVariables>({
+      document: MessageDocument,
+      variables: { channelId },
+      updateQuery: (prev, { subscriptionData }) => {
+        return {
+          ...prev,
+          channelById: {
+            ...prev.channelById,
+            messagesByChannelId: {
+              ...prev.channelById.messagesByChannelId,
+              nodes: [
+                ...prev.channelById.messagesByChannelId.nodes,
+                subscriptionData.data.newMessage.message,
+              ],
             },
-          }
-        },
-      })
+          },
+        }
+      },
+    })
+
+    return () => {
+      if (unsubscribe) unsubscribe()
     }
   }, [channelId, subscribeToMore])
 
