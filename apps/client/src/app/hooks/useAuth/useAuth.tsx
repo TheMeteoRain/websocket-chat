@@ -32,7 +32,7 @@ export interface AuthState {
 export type AuthReducerActionTypes =
   | { type: 'UPDATE_MEMBER'; payload: { member: Member } }
   | { type: 'UPDATE_JWT_TOKEN'; payload: { jwtToken: string } }
-  | { type: 'CLEAR' }
+  | { type: 'RESET_STATE' }
 
 const initialState: AuthState = {
   member: null,
@@ -55,7 +55,7 @@ const socialReducer: React.Reducer<
         isAuthenticated: true,
       }
     }
-    case 'CLEAR': {
+    case 'RESET_STATE': {
       return { ...initialState }
     }
     default: {
@@ -70,12 +70,13 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
     'token',
     null
   )
-  const [registerMemberFn] = useRegisterMemberMutation()
+  const [registerMemberMutation] = useRegisterMemberMutation()
   const [authenticate] = useAuthenticateMutation({
     onCompleted: (data) => {
       setJWTToken(data.authenticate.jwtToken)
     },
   })
+
   useCurrentMemberQuery({
     fetchPolicy: 'network-only',
     onCompleted: (data) => {
@@ -104,7 +105,7 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
   const register = React.useCallback(
     async (options: RegisterMemberMutationOptions) => {
       const { email, password } = options.variables
-      const result = await registerMemberFn(options)
+      const result = await registerMemberMutation(options)
       const {
         data: { registerMember },
       } = result
@@ -122,12 +123,12 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
 
       return result
     },
-    [authenticate, registerMemberFn]
+    [authenticate, registerMemberMutation]
   )
 
   const logout = React.useCallback(() => {
     removeToken()
-    dispatch({ type: 'CLEAR' })
+    dispatch({ type: 'RESET_STATE' })
   }, [removeToken])
 
   return (
