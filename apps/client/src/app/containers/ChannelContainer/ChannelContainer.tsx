@@ -15,16 +15,15 @@ import { useParams } from '@src/react/useParams'
 import { getUserAvatarName } from '@src/utils/user'
 import React from 'react'
 
-export interface ChannelContainerProps {}
+export interface ChannelContainerProps { }
 
 export const ChannelContainer: React.FC<ChannelContainerProps> = () => {
   const { channelId } = useParams()
-  const { current_member } = useAuth()
+  const { member } = useAuth()
   const channelChatWindowRef = React.useRef<HTMLElement>(null)
-  console.log({ channelId })
   const { data, loading, subscribeToMore } = useChannelByIdQuery({
     fetchPolicy: 'cache-and-network',
-    variables: { channelId: channelId, memberId: current_member.id },
+    variables: { channelId: channelId, memberId: member.id },
   })
   const [createMessage] = useCreateMessageMutation()
 
@@ -72,7 +71,7 @@ export const ChannelContainer: React.FC<ChannelContainerProps> = () => {
       const { data, errors } = await createMessage({
         variables: {
           text: message,
-          memberId: current_member.id,
+          memberId: member.id,
           channelId,
         },
       })
@@ -91,7 +90,7 @@ export const ChannelContainer: React.FC<ChannelContainerProps> = () => {
     <Channel
       id={channelId}
       handleOnSubmit={handleOnSubmit}
-      user={current_member}
+      user={member}
       title={
         recipient && (
           <>

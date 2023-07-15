@@ -25,7 +25,7 @@ export type Auth = {
 const AuthContext = React.createContext<Required<Auth> | undefined>(undefined)
 
 export interface AuthState {
-  current_member: Member
+  member: Member
   isAuthenticated: boolean
   jwtToken: string
 }
@@ -35,7 +35,7 @@ export type AuthReducerActionTypes =
   | { type: 'CLEAR' }
 
 const initialState: AuthState = {
-  current_member: null,
+  member: null,
   isAuthenticated: false,
   jwtToken: null,
 }
@@ -46,7 +46,7 @@ const socialReducer: React.Reducer<
 > = (prevState, action) => {
   switch (action.type) {
     case 'UPDATE_MEMBER': {
-      return { ...prevState, current_member: action.payload.member }
+      return { ...prevState, member: action.payload.member }
     }
     case 'UPDATE_JWT_TOKEN': {
       return {

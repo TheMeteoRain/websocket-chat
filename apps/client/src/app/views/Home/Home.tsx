@@ -26,20 +26,20 @@ const useStyles = makeStyles((theme) =>
   })
 )
 
-export interface HomeProps {}
+export interface HomeProps { }
 
 export const Home: React.FC<HomeProps> = (props) => {
   const classes = useStyles()
-  const { current_member } = useAuth()
+  const { member } = useAuth()
   const { data, subscribeToMore } = useChannelsByMemberIdQuery({
-    variables: { id: current_member?.id },
+    variables: { id: member?.id },
   })
 
   React.useEffect(() => {
-    if (current_member?.id && subscribeToMore) {
+    if (member?.id && subscribeToMore) {
       subscribeToMore<ChannelSubscription, ChannelSubscriptionVariables>({
         document: ChannelDocument,
-        variables: { id: current_member.id },
+        variables: { id: member.id },
         updateQuery: (prev, { subscriptionData }) => {
           return {
             ...prev,
@@ -62,7 +62,7 @@ export const Home: React.FC<HomeProps> = (props) => {
         },
       })
     }
-  }, [current_member?.id, subscribeToMore])
+  }, [member?.id, subscribeToMore])
 
   const channels = React.useMemo(() => {
     if (!data) return []
@@ -94,7 +94,7 @@ export const Home: React.FC<HomeProps> = (props) => {
 
   return (
     <div className={classes.root}>
-      <ChannelDrawer channels={channels} myUser={current_member} />
+      <ChannelDrawer channels={channels} myUser={member} />
 
       <main className={classes.content}>
         <Routes>
