@@ -3058,12 +3058,18 @@ type Subscription {
   - when their organization membership changes
   """
   newChannel: ChannelSubscriptionPayload
+  newMessages: MessageSubscriptionPayload2
   newMessage(input: MessageSubscriptionInput!): MessageSubscriptionPayload
   listen(topic: String!): ListenPayload!
 }
 
 type ChannelSubscriptionPayload {
   channel: Channel
+  event: String
+}
+
+type MessageSubscriptionPayload2 {
+  message: Message
   event: String
 }
 

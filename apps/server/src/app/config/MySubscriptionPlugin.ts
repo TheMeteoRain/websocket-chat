@@ -20,6 +20,18 @@ const currentUserTopicFromContextForChannel = async (
   }
 }
 
+const currentUserTopicFromContextForMessageV2 = async (
+  _args,
+  context,
+  _resolveInfo
+) => {
+  if (context.jwtClaims.member_id) {
+    return `graphql:messages:${context.jwtClaims.member_id}`
+  } else {
+    throw new Error("You're not logged in")
+  }
+}
+
 const currentUserTopicFromContextForMessage = async (
   args,
   context,
@@ -58,6 +70,14 @@ export default makeExtendSchemaPlugin(({ pgSql: sql }) => ({
       event: String
     }
 
+    type MessageSubscriptionPayload2 {
+      # This is populated by our resolver below
+      message: Message
+
+      # This is returned directly from the PostgreSQL subscription payload (JSON object)
+      event: String
+    }
+
     type HelloSubscriptionPayload {
       # This is populated by our resolver below
       hello: String
@@ -78,6 +98,10 @@ export default makeExtendSchemaPlugin(({ pgSql: sql }) => ({
       """
       newChannel: ChannelSubscriptionPayload
         @pgSubscription(topic: ${embed(currentUserTopicFromContextForChannel)})
+      newMessages: MessageSubscriptionPayload2
+        @pgSubscription(topic: ${embed(
+          currentUserTopicFromContextForMessageV2
+        )})
       newMessage(input: MessageSubscriptionInput!): MessageSubscriptionPayload
         @pgSubscription(topic: ${embed(currentUserTopicFromContextForMessage)})
     }
@@ -112,6 +136,31 @@ export default makeExtendSchemaPlugin(({ pgSql: sql }) => ({
       },
     },
     MessageSubscriptionPayload: {
+      // This method finds the user from the database based on the event
+      // published by PostgreSQL.
+      //
+      // In a future release, we hope to enable you to replace this entire
+      // method with a small schema directive above, should you so desire. It's
+      // mostly boilerplate.
+      async message(
+        event,
+        _args,
+        _context,
+        { graphile: { selectGraphQLResultFromTable } }
+      ) {
+        const rows = await selectGraphQLResultFromTable(
+          sql.fragment`public.message`,
+          (tableAlias, sqlBuilder) => {
+            sqlBuilder.where(
+              sql.fragment`${tableAlias}.id = ${sql.value(event.subject.id)}`
+            )
+          }
+        )
+
+        return rows[0]
+      },
+    },
+    MessageSubscriptionPayload2: {
       // This method finds the user from the database based on the event
       // published by PostgreSQL.
       //

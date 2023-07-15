@@ -1,0 +1,13 @@
+subscription Messages {
+  newMessages {
+    message {
+      nodeId
+      id
+      text
+      memberId
+      channelId
+      createdAt
+      updatedAt
+    }
+  }
+}

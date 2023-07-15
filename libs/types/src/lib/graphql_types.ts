@@ -1408,6 +1408,12 @@ export type MessageSubscriptionPayload = {
   message?: Maybe<Message>;
 };
 
+export type MessageSubscriptionPayload2 = {
+  __typename?: 'MessageSubscriptionPayload2';
+  event?: Maybe<Scalars['String']>;
+  message?: Maybe<Message>;
+};
+
 /** A connection to a list of `Message` values. */
 export type MessagesConnection = {
   __typename?: 'MessagesConnection';
@@ -2153,6 +2159,7 @@ export type Subscription = {
    */
   newChannel?: Maybe<ChannelSubscriptionPayload>;
   newMessage?: Maybe<MessageSubscriptionPayload>;
+  newMessages?: Maybe<MessageSubscriptionPayload2>;
 };
 
 
@@ -2605,3 +2612,8 @@ export type MessageSubscriptionVariables = Exact<{
 
 
 export type MessageSubscription = { __typename?: 'Subscription', newMessage?: { __typename?: 'MessageSubscriptionPayload', message?: { __typename?: 'Message', nodeId: string, id: any, text: string, memberId?: any | null | undefined, createdAt?: any | null | undefined, updatedAt?: any | null | undefined } | null | undefined } | null | undefined };
+
+export type MessagesSubscriptionVariables = Exact<{ [key: string]: never; }>;
+
+
+export type MessagesSubscription = { __typename?: 'Subscription', newMessages?: { __typename?: 'MessageSubscriptionPayload2', message?: { __typename?: 'Message', nodeId: string, id: any, text: string, memberId?: any | null | undefined, channelId?: any | null | undefined, createdAt?: any | null | undefined, updatedAt?: any | null | undefined } | null | undefined } | null | undefined };

@@ -70,6 +70,23 @@ BEGIN
   return NEW;
 END;
 $$ LANGUAGE plpgsql VOLATILE SET search_path FROM current`
+const FUNCTION_SUBSCRIPTION_NEW_MESSAGES = `CREATE FUNCTION graphql_subscription_new_messages() returns trigger AS $$
+DECLARE
+  v_event TEXT = 'newMessages';
+  v_member_id UUID;
+BEGIN
+  FOR v_member_id  IN (SELECT member_id FROM channel_member WHERE channel_id = NEW.channel_id AND member_id != NEW.member_id) LOOP
+    PERFORM pg_notify('graphql:messages:' || v_member_id, json_build_object(
+      'event', v_event,
+      'subject', NEW
+    )::TEXT);
+
+  END LOOP;
+
+  return NEW;
+END;
+$$ LANGUAGE plpgsql VOLATILE SET search_path FROM current`
+
 const FUNCTION_CREATE_CHANNEL = `CREATE FUNCTION create_channels_for_user(
   member_id UUID
 ) returns setof channel AS $$
@@ -154,6 +171,12 @@ const TRIGGER_NEW_CHANNEL = `CREATE TRIGGER trigger_new_channel
   EXECUTE PROCEDURE graphql_subscription_new_channel(
     'graphql:user:$1'
   );`
+const TRIGGER_NEW_MESSAGES = `CREATE TRIGGER trigger_new_messages
+  AFTER INSERT ON message
+  FOR EACH ROW
+  EXECUTE PROCEDURE graphql_subscription_new_messages(
+    'graphql:user:$1'
+  );`
 const TRIGGER_NEW_MESSAGE = `CREATE TRIGGER trigger_new_message
   AFTER INSERT ON message
   FOR EACH ROW
@@ -194,6 +217,8 @@ export async function up(knex: Knex): Promise<unknown> {
     knex.raw(TRIGGER_NEW_CHANNEL),
     knex.raw(FUNCTION_SUBSCRIPTION_NEW_MESSAGE),
     knex.raw(TRIGGER_NEW_MESSAGE),
+    knex.raw(FUNCTION_SUBSCRIPTION_NEW_MESSAGES),
+    knex.raw(TRIGGER_NEW_MESSAGES),
   ])
 }
 
@@ -209,5 +234,7 @@ export async function down(knex: Knex): Promise<unknown> {
     knex.raw(DROP(FUNCTION_SUBSCRIPTION_NEW_CHANNEL)),
     knex.raw(DROP(TRIGGER_NEW_MESSAGE)),
     knex.raw(DROP(FUNCTION_SUBSCRIPTION_NEW_MESSAGE)),
+    knex.raw(DROP(TRIGGER_NEW_MESSAGES)),
+    knex.raw(DROP(FUNCTION_SUBSCRIPTION_NEW_MESSAGES)),
   ])
 }
