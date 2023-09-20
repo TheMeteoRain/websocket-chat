@@ -1,30 +1,30 @@
-import * as Types from '@mete/types';
+import * as Types from '@root/types/lib/models/graphql';
 
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type RegisterMemberMutationVariables = Types.Exact<{
-  firstName: Types.Scalars['String'];
-  lastName: Types.Scalars['String'];
-  email: Types.Scalars['String'];
-  password: Types.Scalars['String'];
+  firstName: Types.Scalars['String']['input'];
+  lastName: Types.Scalars['String']['input'];
+  email: Types.Scalars['String']['input'];
+  password: Types.Scalars['String']['input'];
 }>;
 
 
-export type RegisterMemberMutation = { __typename?: 'Mutation', registerMember?: { __typename?: 'RegisterMemberPayload', member?: { __typename?: 'Member', nodeId: string, id: any, firstName: string, lastName: string } | null | undefined } | null | undefined };
+export type RegisterMemberMutation = { __typename?: 'Mutation', registerMember?: { __typename?: 'Member', id?: any | null, firstName?: string | null, lastName?: string | null } | null };
 
 
 export const RegisterMemberDocument = gql`
     mutation RegisterMember($firstName: String!, $lastName: String!, $email: String!, $password: String!) {
   registerMember(
-    input: {firstName: $firstName, lastName: $lastName, email: $email, password: $password}
+    firstName: $firstName
+    lastName: $lastName
+    email: $email
+    password: $password
   ) {
-    member {
-      nodeId
-      id
-      firstName
-      lastName
-    }
+    id
+    firstName
+    lastName
   }
 }
     `;

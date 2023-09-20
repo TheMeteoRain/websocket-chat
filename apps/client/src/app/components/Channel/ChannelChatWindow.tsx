@@ -2,6 +2,8 @@ import Paper from '@material-ui/core/Paper'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import React from 'react'
 import { ChannelChatMessage } from './ChannelChatMessage'
+import Member from '@src/@types/Member'
+import Message from '@src/@types/Message'
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -18,7 +20,7 @@ const useStyles = makeStyles((theme: Theme) =>
 
 export type ChannelChatWindowProps = {
   user: Member
-  messages: ChannelMessage[]
+  messages: Message[]
 }
 
 export const ChannelChatWindow = React.forwardRef<

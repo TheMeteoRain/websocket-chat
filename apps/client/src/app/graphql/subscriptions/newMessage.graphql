@@ -1,0 +1,10 @@
+subscription NewMessage {
+  newMessage {
+    id
+    text
+    channelId
+    memberId
+    createdAt
+    updatedAt
+  }
+}

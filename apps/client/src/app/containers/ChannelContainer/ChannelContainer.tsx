@@ -2,68 +2,38 @@ import { CircularProgress } from '@material-ui/core'
 import Avatar from '@material-ui/core/Avatar'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
+import Member from '@src/@types/Member'
 import { Channel } from '@src/components/Channel'
 import { useCreateMessageMutation } from '@src/graphql/mutations/createMessage.generated'
 import { useChannelByIdQuery } from '@src/graphql/queries/channelById.generated'
-import {
-  MessageDocument,
-  MessageSubscription,
-  MessageSubscriptionVariables,
-} from '@src/graphql/subscriptions/message.generated'
+import { useChannelsByMemberIdQuery } from '@src/graphql/queries/channelsByMemberId.generated'
+import { useMessage } from '@src/hooks'
 import { useAuth } from '@src/hooks/useAuth'
 import { useParams } from '@src/react/useParams'
 import { getUserAvatarName } from '@src/utils/user'
+import gql from 'graphql-tag'
 import React from 'react'
 
-export interface ChannelContainerProps { }
+export interface ChannelContainerProps {}
 
 export const ChannelContainer: React.FC<ChannelContainerProps> = () => {
   const { channelId } = useParams()
   const { member } = useAuth()
   const channelChatWindowRef = React.useRef<HTMLElement>(null)
-  const { data, loading, subscribeToMore } = useChannelByIdQuery({
+  const { data, loading, subscribeToMore, error } = useChannelByIdQuery({
     fetchPolicy: 'cache-and-network',
-    variables: { channelId: channelId, memberId: member.id },
+    variables: { id: channelId },
   })
-  const [createMessage] = useCreateMessageMutation()
+  const {
+    createMessageMutation: [createMessage],
+  } = useMessage()
 
-  React.useEffect(() => {
-    let unsubscribe: ReturnType<typeof subscribeToMore>
-
-    unsubscribe = subscribeToMore<MessageSubscription, MessageSubscriptionVariables>({
-      document: MessageDocument,
-      variables: { channelId },
-      updateQuery: (prev, { subscriptionData }) => {
-        return {
-          ...prev,
-          channelById: {
-            ...prev.channelById,
-            messagesByChannelId: {
-              ...prev.channelById.messagesByChannelId,
-              nodes: [
-                ...prev.channelById.messagesByChannelId.nodes,
-                subscriptionData.data.newMessage.message,
-              ],
-            },
-          },
-        }
-      },
-    })
-
-    return () => {
-      if (unsubscribe) unsubscribe()
-    }
-  }, [channelId, subscribeToMore])
-
-  const messages = React.useMemo(() => {
-    if (!data) return []
-    return data.channelById.messagesByChannelId.nodes.map((node) => node)
-  }, [data])
-  const recipient = React.useMemo(() => {
-    return data?.channelById?.channelMembersByChannelId?.nodes.map(
-      ({ memberByMemberId }) => memberByMemberId
-    )[0]
-  }, [data])
+  const recipient: Member | null = React.useMemo(() => {
+    if (!data) return null
+    return data?.channelById?.members?.find(
+      (channelMember) => channelMember.id !== member.id
+    )
+  }, [data?.channelById?.members?.length])
 
   const handleOnSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     // After promise event.currentTarget is no longer available - so will save it here :)
@@ -90,6 +60,14 @@ export const ChannelContainer: React.FC<ChannelContainerProps> = () => {
     }
   }
 
+  if (error) {
+    return <div>error</div>
+  }
+
+  if (!data && loading && !error) {
+    return <div>loading...</div>
+  }
+
   return (
     <Channel
       id={channelId}
@@ -107,7 +85,7 @@ export const ChannelContainer: React.FC<ChannelContainerProps> = () => {
           </>
         )
       }
-      messages={messages}
+      messages={data.channelById.messages}
       channelChatWindowRef={channelChatWindowRef}
     />
   )

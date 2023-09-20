@@ -1,1 +1,2 @@
-export * from './lib/graphql_types'
+export * as db from './lib/models/db'
+export * as graphql from './lib/models/graphql'

@@ -1,32 +1,19 @@
-query ChannelsByMemberId($id: UUID!) {
-  memberById(id: $id) {
-    channelMembersByMemberId {
-      nodes {
-        nodeId
-        channelId
-        channelByChannelId {
-          messagesByChannelId(last: 50) {
-            nodes {
-              id
-              nodeId
-              memberId
-              text
-              createdAt
-              updatedAt
-            }
-          }
-          channelMembersByChannelId(filter: { memberId: { notEqualTo: $id } }) {
-            nodes {
-              memberByMemberId {
-                firstName
-                lastName
-                id
-                nodeId
-              }
-            }
-          }
-        }
-      }
+query ChannelsByMemberId($memberId: UUID!) {
+  channelsByMemberId(memberId: $memberId) {
+    id
+    createdAt
+    updatedAt
+    members {
+      id
+      firstName
+      lastName
+    }
+    messages {
+      id
+      text
+      memberId
+      createdAt
+      updatedAt
     }
   }
 }

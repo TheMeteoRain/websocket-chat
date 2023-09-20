@@ -3,6 +3,7 @@ import Button from '@material-ui/core/Button'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
+import Member from '@src/@types/Member'
 import React from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>

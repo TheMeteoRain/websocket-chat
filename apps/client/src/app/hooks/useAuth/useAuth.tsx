@@ -1,14 +1,14 @@
 import { useSessionStorageValue } from '@react-hookz/web'
-import {
-  AuthenticateMutationHookResult,
-  AuthenticateMutationOptions,
-  useAuthenticateMutation,
-} from '@src/graphql/mutations/authenticate.generated'
+import Member from '@src/@types/Member'
 import {
   RegisterMemberMutationHookResult,
   RegisterMemberMutationOptions,
   useRegisterMemberMutation,
 } from '@src/graphql/mutations/registerMember.generated'
+import {
+  AuthenticateLazyQueryHookResult,
+  useAuthenticateLazyQuery,
+} from '@src/graphql/queries/authenticate.generated'
 import { useCurrentMemberQuery } from '@src/graphql/queries/currentMember.generated'
 import React from 'react'
 
@@ -18,7 +18,7 @@ export type AuthProps = {
 
 export type Auth = {
   register: RegisterMemberMutationHookResult[0]
-  authenticate: AuthenticateMutationHookResult[0]
+  authenticate: AuthenticateLazyQueryHookResult[0]
   logout: () => void
 } & AuthState
 
@@ -71,9 +71,9 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
     null
   )
   const [registerMemberMutation] = useRegisterMemberMutation()
-  const [authenticate] = useAuthenticateMutation({
+  const [authenticate] = useAuthenticateLazyQuery({
     onCompleted: (data) => {
-      setJWTToken(data.authenticate.jwtToken)
+      setJWTToken(data.authenticate)
     },
   })
 
@@ -106,9 +106,7 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
     async (options: RegisterMemberMutationOptions) => {
       const { email, password } = options.variables
       const result = await registerMemberMutation(options)
-      const {
-        data: { registerMember },
-      } = result
+
       await authenticate({
         variables: {
           email,
@@ -118,7 +116,7 @@ const AuthProvider: React.FC<AuthProps> = ({ children }) => {
 
       dispatch({
         type: 'UPDATE_MEMBER',
-        payload: { member: registerMember?.member },
+        payload: { member: result?.data?.registerMember },
       })
 
       return result

@@ -5,9 +5,14 @@ import { useChannelsByMemberIdQuery } from '@src/graphql/queries/channelsByMembe
 import {
   ChannelDocument,
   ChannelSubscription,
-  ChannelSubscriptionVariables,
 } from '@src/graphql/subscriptions/channel.generated'
+import {
+  NewMessageDocument,
+  NewMessageSubscription,
+} from '@src/graphql/subscriptions/newMessage.generated'
+import { useChannel } from '@src/hooks'
 import { useAuth } from '@src/hooks/useAuth'
+import { useMessage } from '@src/hooks/useMessage'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
@@ -26,75 +31,16 @@ const useStyles = makeStyles((theme) =>
   })
 )
 
-export interface HomeProps { }
+export interface HomeProps {}
 
 export const Home: React.FC<HomeProps> = (props) => {
   const classes = useStyles()
   const { member } = useAuth()
-  const { data, subscribeToMore } = useChannelsByMemberIdQuery({
-    variables: { id: member?.id },
-  })
-
-  React.useEffect(() => {
-    if (member?.id && subscribeToMore) {
-      subscribeToMore<ChannelSubscription, ChannelSubscriptionVariables>({
-        document: ChannelDocument,
-        variables: { id: member.id },
-        updateQuery: (prev, { subscriptionData }) => {
-          return {
-            ...prev,
-            ...{
-              memberById: {
-                ...prev.memberById,
-                channelMembersByMemberId: {
-                  ...prev.memberById.channelMembersByMemberId,
-                  nodes: [
-                    ...prev.memberById.channelMembersByMemberId.nodes,
-                    ...subscriptionData.data.newChannel.channel.channelMembersByChannelId.nodes.flatMap(
-                      (node) =>
-                        node.channelByChannelId.channelMembersByChannelId.nodes
-                    ),
-                  ],
-                },
-              },
-            },
-          }
-        },
-      })
-    }
-  }, [member?.id, subscribeToMore])
-
-  const channels = React.useMemo(() => {
-    if (!data) return []
-    return data.memberById.channelMembersByMemberId.nodes.map(
-      (node): Channel => {
-        return {
-          id: node.channelId,
-          nodeId: node.nodeId,
-          messages: node.channelByChannelId.messagesByChannelId.nodes.map(
-            ({ id, nodeId, memberId, text }) => ({
-              id,
-              nodeId,
-              authorId: memberId,
-              text,
-            })
-          ),
-          members: node.channelByChannelId.channelMembersByChannelId.nodes.map(
-            ({ memberByMemberId: { firstName, lastName, id, nodeId } }) => ({
-              id,
-              nodeId,
-              firstName,
-              lastName,
-            })
-          ),
-        }
-      }
-    )
-  }, [data])
+  const { data } = useChannel()
 
   return (
     <div className={classes.root}>
-      <ChannelDrawer channels={channels} myUser={member} />
+      <ChannelDrawer channels={data?.channelsByMemberId} myUser={member} />
 
       <main className={classes.content}>
         <Routes>

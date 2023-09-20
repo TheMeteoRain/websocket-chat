@@ -1,0 +1,25 @@
+scalar UUID
+scalar DateTimeISO
+
+type Message {
+  id: UUID
+  text: String
+  channelId: UUID
+  memberId: UUID
+  createdAt: DateTimeISO
+  updatedAt: DateTimeISO
+}
+
+type Query {
+  messageById(id: UUID!): Message
+  messagesByChannelId(channelId: UUID!): [Message]!
+  messagesByMemberId(memberId: UUID!): [Message]!
+}
+
+type Mutation {
+  createMessage(channelId: UUID!, memberId: UUID!, text: String!): Message
+}
+
+type Subscription {
+  newMessage: Message
+}

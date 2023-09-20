@@ -14,7 +14,7 @@
     ],
     "paths": {
       "@src/*": ["apps/client/src/app/*"],
-      "@mete/types": ["libs/types/src/index.ts"]
+      "@root/types/*": ["libs/types/src/*"]
     }
   },
   "files": [],

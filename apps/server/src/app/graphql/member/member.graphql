@@ -1,0 +1,26 @@
+scalar UUID
+scalar DateTimeISO
+
+type Member {
+  id: UUID
+  firstName: String
+  lastName: String
+  createdAt: DateTimeISO
+  updatedAt: DateTimeISO
+}
+
+type Query {
+  hello: String
+  currentMember: Member
+  memberById(id: UUID!): Member
+  membersByChannelId(channelId: UUID!): [Member]!
+}
+
+type Mutation {
+  registerMember(
+    firstName: String!
+    lastName: String!
+    email: String!
+    password: String!
+  ): Member
+}

@@ -8,9 +8,9 @@
     "lib": ["es2019", "ES2019.Object"],
     "typeRoots": ["node_modules/@types", "src/express-app-env.d.ts"],
     "paths": {
-      "@src/*": ["apps/server/src/app/*"],
+      "@src/*": ["apps/server/src/*"],
       "@app/*": ["apps/server/*"],
-      "@mete/types": ["libs/types/src/index.ts"]
+      "@libs/types/*": ["libs/types/src/*"]
     }
   },
   "files": [],

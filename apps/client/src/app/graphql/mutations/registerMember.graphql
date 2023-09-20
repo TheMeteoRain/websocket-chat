@@ -5,18 +5,13 @@ mutation RegisterMember(
   $password: String!
 ) {
   registerMember(
-    input: {
-      firstName: $firstName
-      lastName: $lastName
-      email: $email
-      password: $password
-    }
+    firstName: $firstName
+    lastName: $lastName
+    email: $email
+    password: $password
   ) {
-    member {
-      nodeId
-      id
-      firstName
-      lastName
-    }
+    id
+    firstName
+    lastName
   }
 }

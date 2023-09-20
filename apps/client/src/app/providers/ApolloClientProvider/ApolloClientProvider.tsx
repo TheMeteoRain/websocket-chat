@@ -7,14 +7,17 @@ import {
   NormalizedCacheObject,
   Operation,
 } from '@apollo/client'
-import { WebSocketLink } from '@apollo/client/link/ws'
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { onError } from '@apollo/client/link/error'
 import { useSessionStorageValue } from '@react-hookz/web'
 import faker from 'faker'
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { cache } from './cache'
+import { createClient } from 'graphql-ws'
 
 const { NX_API_SCHEME_WS, NX_API_SCHEME_HTTP, NX_API_HOST, NX_API_ENDPOINT } =
+  // @ts-ignore
   process.env
 
 export interface ApolloClientProviderProps {
@@ -39,7 +42,7 @@ export const ApolloClientProvider: React.FC<ApolloClientProviderProps> = (
     // add the authorization to the headers
     operation.setContext({
       headers: {
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
     })
 
@@ -62,16 +65,17 @@ export const ApolloClientProvider: React.FC<ApolloClientProviderProps> = (
 
   const apolloLink = ApolloLink.split(
     hasSubscriptionOperation,
-    new WebSocketLink({
-      uri: `${NX_API_SCHEME_WS}://${NX_API_HOST}/${NX_API_ENDPOINT}`,
-      options: {
-        reconnect: true,
-        connectionParams: {
-          uuid: faker.datatype.uuid(),
-          ...(token ? { Authorization: `Bearer ${token}` } : null),
+    new GraphQLWsLink(
+      createClient({
+        url: `${NX_API_SCHEME_WS}://localhost:4300/${NX_API_ENDPOINT}`,
+        shouldRetry: () => true,
+        connectionParams: () => {
+          return {
+            authorization: `Bearer ${token}`,
+          }
         },
-      },
-    }),
+      })
+    ),
     new HttpLink({
       uri: `${NX_API_SCHEME_HTTP}://${NX_API_HOST}/${NX_API_ENDPOINT}`,
     })
@@ -79,7 +83,7 @@ export const ApolloClientProvider: React.FC<ApolloClientProviderProps> = (
 
   const apolloClient: ApolloClient<NormalizedCacheObject> = new ApolloClient({
     link: ApolloLink.from([authMiddleware, apolloLink]),
-    cache: new InMemoryCache(),
+    cache,
     connectToDevTools: true,
   })
 

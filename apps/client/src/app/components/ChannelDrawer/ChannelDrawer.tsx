@@ -9,6 +9,8 @@ import Toolbar from '@material-ui/core/Toolbar'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { getUserAvatarName } from '@src/utils/user'
+import Member from '@src/@types/Member'
+import Channel from '@src/@types/Channel'
 
 const drawerWidth = 240
 

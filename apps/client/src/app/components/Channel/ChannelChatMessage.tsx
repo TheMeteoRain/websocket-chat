@@ -1,6 +1,6 @@
 import Card from '@material-ui/core/Card'
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles'
-import { Message } from '@mete/types'
+import Message from '@src/@types/Message'
 import React from 'react'
 
 const useStyles = makeStyles((theme: Theme) =>

@@ -89,6 +89,10 @@ Teams using Nx gain the advantage of building full-stack applications with their
 
 Visit [Nx Cloud](https://nx.app/) to learn more.
 
+## Development notes
+
+    pgcli -h 127.0.0.1 -p 6543 -u chat_user -d chat
+
 ## Heroku
 
 w

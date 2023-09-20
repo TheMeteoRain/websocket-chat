@@ -1,32 +1,27 @@
-import * as Types from '@mete/types';
+import * as Types from '@root/types/lib/models/graphql';
 
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type CreateMessageMutationVariables = Types.Exact<{
-  channelId: Types.Scalars['UUID'];
-  memberId: Types.Scalars['UUID'];
-  text: Types.Scalars['String'];
+  channelId: Types.Scalars['UUID']['input'];
+  memberId: Types.Scalars['UUID']['input'];
+  text: Types.Scalars['String']['input'];
 }>;
 
 
-export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'CreateMessagePayload', message?: { __typename?: 'Message', nodeId: string, id: any, text: string, channelId?: any | null | undefined, memberId?: any | null | undefined, createdAt?: any | null | undefined, updatedAt?: any | null | undefined } | null | undefined } | null | undefined };
+export type CreateMessageMutation = { __typename?: 'Mutation', createMessage?: { __typename?: 'Message', id?: any | null, text?: string | null, channelId?: any | null, memberId?: any | null, createdAt?: any | null, updatedAt?: any | null } | null };
 
 
 export const CreateMessageDocument = gql`
     mutation CreateMessage($channelId: UUID!, $memberId: UUID!, $text: String!) {
-  createMessage(
-    input: {message: {channelId: $channelId, memberId: $memberId, text: $text}}
-  ) {
-    message {
-      nodeId
-      id
-      text
-      channelId
-      memberId
-      createdAt
-      updatedAt
-    }
+  createMessage(channelId: $channelId, memberId: $memberId, text: $text) {
+    id
+    text
+    channelId
+    memberId
+    createdAt
+    updatedAt
   }
 }
     `;

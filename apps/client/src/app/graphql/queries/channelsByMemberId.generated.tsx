@@ -1,46 +1,33 @@
-import * as Types from '@mete/types';
+import * as Types from '@root/types/lib/models/graphql';
 
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
 const defaultOptions = {} as const;
 export type ChannelsByMemberIdQueryVariables = Types.Exact<{
-  id: Types.Scalars['UUID'];
+  memberId: Types.Scalars['UUID']['input'];
 }>;
 
 
-export type ChannelsByMemberIdQuery = { __typename?: 'Query', memberById?: { __typename?: 'Member', channelMembersByMemberId: { __typename?: 'ChannelMembersConnection', nodes: Array<{ __typename?: 'ChannelMember', nodeId: string, channelId: any, channelByChannelId?: { __typename?: 'Channel', messagesByChannelId: { __typename?: 'MessagesConnection', nodes: Array<{ __typename?: 'Message', id: any, nodeId: string, memberId?: any | null | undefined, text: string, createdAt?: any | null | undefined, updatedAt?: any | null | undefined } | null | undefined> }, channelMembersByChannelId: { __typename?: 'ChannelMembersConnection', nodes: Array<{ __typename?: 'ChannelMember', memberByMemberId?: { __typename?: 'Member', firstName: string, lastName: string, id: any, nodeId: string } | null | undefined } | null | undefined> } } | null | undefined } | null | undefined> } } | null | undefined };
+export type ChannelsByMemberIdQuery = { __typename?: 'Query', channelsByMemberId: Array<{ __typename?: 'Channel', id: any, createdAt: any, updatedAt: any, members: Array<{ __typename?: 'Member', id?: any | null, firstName?: string | null, lastName?: string | null } | null>, messages: Array<{ __typename?: 'Message', id?: any | null, text?: string | null, memberId?: any | null, createdAt?: any | null, updatedAt?: any | null } | null> } | null> };
 
 
 export const ChannelsByMemberIdDocument = gql`
-    query ChannelsByMemberId($id: UUID!) {
-  memberById(id: $id) {
-    channelMembersByMemberId {
-      nodes {
-        nodeId
-        channelId
-        channelByChannelId {
-          messagesByChannelId(last: 50) {
-            nodes {
-              id
-              nodeId
-              memberId
-              text
-              createdAt
-              updatedAt
-            }
-          }
-          channelMembersByChannelId(filter: {memberId: {notEqualTo: $id}}) {
-            nodes {
-              memberByMemberId {
-                firstName
-                lastName
-                id
-                nodeId
-              }
-            }
-          }
-        }
-      }
+    query ChannelsByMemberId($memberId: UUID!) {
+  channelsByMemberId(memberId: $memberId) {
+    id
+    createdAt
+    updatedAt
+    members {
+      id
+      firstName
+      lastName
+    }
+    messages {
+      id
+      text
+      memberId
+      createdAt
+      updatedAt
     }
   }
 }
@@ -58,7 +45,7 @@ export const ChannelsByMemberIdDocument = gql`
  * @example
  * const { data, loading, error } = useChannelsByMemberIdQuery({
  *   variables: {
- *      id: // value for 'id'
+ *      memberId: // value for 'memberId'
  *   },
  * });
  */

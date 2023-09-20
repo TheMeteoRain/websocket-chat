@@ -1,4 +1,4 @@
-import * as Types from '@mete/types';
+import * as Types from '@root/types/lib/models/graphql';
 
 import { gql } from '@apollo/client';
 import * as Apollo from '@apollo/client';
@@ -6,13 +6,12 @@ const defaultOptions = {} as const;
 export type CurrentMemberQueryVariables = Types.Exact<{ [key: string]: never; }>;
 
 
-export type CurrentMemberQuery = { __typename?: 'Query', currentMember?: { __typename?: 'Member', nodeId: string, id: any, firstName: string, lastName: string } | null | undefined };
+export type CurrentMemberQuery = { __typename?: 'Query', currentMember?: { __typename?: 'Member', id?: any | null, firstName?: string | null, lastName?: string | null } | null };
 
 
 export const CurrentMemberDocument = gql`
     query CurrentMember {
   currentMember {
-    nodeId
     id
     firstName
     lastName
