@@ -40,9 +40,9 @@ const authenticate = async (input: AuthenticateInput): Promise<string> => {
     .query<JwtToken>('SELECT * FROM authenticate($1, $2)', [email, password])
     .then((result) => result.rows[0])
 
-  // @ts-ignore: type should accept bigint | string | null
+  // @ts-ignore: type should accept number | string | null
   // currently accepts string | null
-  dbJwt.exp = BigInt(dbJwt.exp)
+  dbJwt.exp = parseInt(dbJwt.exp)
 
   return jwt.sign(dbJwt, process.env.SECRET, { algorithm: 'HS256' })
 }
