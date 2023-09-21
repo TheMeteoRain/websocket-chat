@@ -6,11 +6,17 @@ import { makeStyles } from '@material-ui/core/styles'
 import React from 'react'
 
 function LinearProgressWithLabel(props: LinearProgressProps) {
+  const temporary = (
+    //@ts-ignore
+    <Box width='100%'>
+      <LinearProgress color='secondary' variant='indeterminate' {...props} />
+    </Box>
+  )
+
   return (
+    //@ts-ignore
     <Box display='flex' alignItems='center'>
-      <Box width='100%'>
-        <LinearProgress color='secondary' variant='indeterminate' {...props} />
-      </Box>
+      {temporary}
     </Box>
   )
 }
