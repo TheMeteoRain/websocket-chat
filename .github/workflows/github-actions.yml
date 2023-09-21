@@ -16,3 +16,15 @@ jobs:
         run: |
           ls ${{ github.workspace }}
       - run: echo "🍏 This job's status is ${{ job.status }}."
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install latest bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - run: bun install
+      - run: bun test
+      - run: bun build
