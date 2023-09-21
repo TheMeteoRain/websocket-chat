@@ -33,6 +33,6 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
-      - run: yarn install --frozen-lockfile
+      - run: yarn install
       - run: yarn test
       - run: yarn build
