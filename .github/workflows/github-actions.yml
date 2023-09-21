@@ -26,5 +26,6 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v4
       - run: bun install
-      - run: bun test
+      - run: bun nx test client
+      - run: bun nx test server
       - run: bun build
