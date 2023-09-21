@@ -1,21 +1,17 @@
-import React from 'react'
+import { faker } from '@faker-js/faker'
 import Avatar from '@material-ui/core/Avatar'
 import Button from '@material-ui/core/Button'
+import Container from '@material-ui/core/Container'
 import CssBaseline from '@material-ui/core/CssBaseline'
-import TextField from '@material-ui/core/TextField'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
-import Link from '@material-ui/core/Link'
 import Grid from '@material-ui/core/Grid'
-import Box from '@material-ui/core/Box'
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
+import Link from '@material-ui/core/Link'
+import TextField from '@material-ui/core/TextField'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
-import Container from '@material-ui/core/Container'
-import faker from 'faker'
-import { useForm, Controller } from 'react-hook-form'
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import { useAuth } from '@src/hooks/useAuth'
-import { RouteProps } from 'react-router-dom'
+import React from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -47,16 +43,14 @@ export interface SignUpFormState {
 export interface SignUpProps {}
 
 const signUpFormDefaultValues = (): SignUpFormState => {
-  const firstName = faker.name.firstName(
-    Number.parseInt(Math.random().toFixed())
-  )
-  const lastName = faker.name.lastName(Number.parseInt(Math.random().toFixed()))
+  const firstName = faker.person.firstName()
+  const lastName = faker.person.lastName()
 
   return {
     firstName,
     lastName,
-    email: faker.internet.email(firstName, lastName),
-    password: faker.internet.password(15, true),
+    email: faker.internet.email({ firstName, lastName }),
+    password: faker.internet.password({ length: 15 }),
   }
 }
 

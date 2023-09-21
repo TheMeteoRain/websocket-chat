@@ -1,17 +1,13 @@
-import { CircularProgress } from '@material-ui/core'
 import Avatar from '@material-ui/core/Avatar'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
 import Member from '@src/@types/Member'
 import { Channel } from '@src/components/Channel'
-import { useCreateMessageMutation } from '@src/graphql/mutations/createMessage.generated'
 import { useChannelByIdQuery } from '@src/graphql/queries/channelById.generated'
-import { useChannelsByMemberIdQuery } from '@src/graphql/queries/channelsByMemberId.generated'
 import { useMessage } from '@src/hooks'
 import { useAuth } from '@src/hooks/useAuth'
 import { useParams } from '@src/react/useParams'
 import { getUserAvatarName } from '@src/utils/user'
-import gql from 'graphql-tag'
 import React from 'react'
 
 export interface ChannelContainerProps {}

@@ -1,18 +1,8 @@
 import { createStyles, makeStyles } from '@material-ui/core/styles'
 import { ChannelDrawer } from '@src/components'
 import { ChannelContainer } from '@src/containers/ChannelContainer'
-import { useChannelsByMemberIdQuery } from '@src/graphql/queries/channelsByMemberId.generated'
-import {
-  ChannelDocument,
-  ChannelSubscription,
-} from '@src/graphql/subscriptions/channel.generated'
-import {
-  NewMessageDocument,
-  NewMessageSubscription,
-} from '@src/graphql/subscriptions/newMessage.generated'
 import { useChannel } from '@src/hooks'
 import { useAuth } from '@src/hooks/useAuth'
-import { useMessage } from '@src/hooks/useMessage'
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
 
