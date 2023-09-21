@@ -25,6 +25,6 @@ jobs:
           bun-version: latest
       - name: Check out repository code
         uses: actions/checkout@v4
-      - run: bun install
+      - run: bun install --frozen-lockfile
       - run: bun run test
       - run: bun run build
