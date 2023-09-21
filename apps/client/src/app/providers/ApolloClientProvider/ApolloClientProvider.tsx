@@ -14,7 +14,6 @@ import React from 'react'
 import { cache } from './cache'
 
 const { NX_API_SCHEME_WS, NX_API_SCHEME_HTTP, NX_API_HOST, NX_API_ENDPOINT } =
-  // @ts-ignore
   process.env
 
 export interface ApolloClientProviderProps {

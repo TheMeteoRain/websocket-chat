@@ -1,4 +1,5 @@
-/* eslint-disable */
+import { Config } from 'jest'
+
 export default {
   displayName: 'client',
 
@@ -9,4 +10,5 @@ export default {
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/apps/client',
   preset: '../../jest.preset.js',
-}
+  setupFiles: ['./jest.setup.ts'],
+} as Config

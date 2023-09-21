@@ -1,5 +1,5 @@
 import React from 'react'
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 
 import App from './App'
 
@@ -10,9 +10,9 @@ describe('App', () => {
     expect(baseElement).toBeTruthy()
   })
 
-  it('should have a greeting as the title', () => {
-    const { getByText } = render(<App />)
+  it("should have a 'Sign up'' as the title", () => {
+    render(<App />)
 
-    expect(getByText('Welcome to client!')).toBeTruthy()
+    expect(screen.findByText('Sign up')).toBeTruthy()
   })
 })
