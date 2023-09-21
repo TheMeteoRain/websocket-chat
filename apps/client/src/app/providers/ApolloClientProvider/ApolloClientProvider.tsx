@@ -3,18 +3,15 @@ import {
   ApolloLink,
   ApolloProvider,
   HttpLink,
-  InMemoryCache,
   NormalizedCacheObject,
   Operation,
 } from '@apollo/client'
-import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { onError } from '@apollo/client/link/error'
+import { GraphQLWsLink } from '@apollo/client/link/subscriptions'
 import { useSessionStorageValue } from '@react-hookz/web'
-import faker from 'faker'
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { cache } from './cache'
 import { createClient } from 'graphql-ws'
+import React from 'react'
+import { cache } from './cache'
 
 const { NX_API_SCHEME_WS, NX_API_SCHEME_HTTP, NX_API_HOST, NX_API_ENDPOINT } =
   // @ts-ignore
@@ -28,8 +25,7 @@ export const ApolloClientProvider: React.FC<ApolloClientProviderProps> = (
   props
 ) => {
   const { children } = props
-  const [token] = useSessionStorageValue('token', null)
-  // const navigate = useNavigate()
+  const [token, _setToken, removeToken] = useSessionStorageValue('token', null)
 
   const hasSubscriptionOperation = ({ query: { definitions } }: Operation) =>
     definitions.some(
@@ -55,11 +51,12 @@ export const ApolloClientProvider: React.FC<ApolloClientProviderProps> = (
     if (
       error.networkError?.message.includes('JWTExpired') ||
       error.graphQLErrors?.some(
-        ({ extensions, message }) =>
-          extensions?.code === 'invalid-jwt' || message.includes('JWTExpired')
+        ({ extensions, message, originalError }) =>
+          extensions?.code === 'invalid-jwt' ||
+          extensions?.originalError?.['message']?.includes('jwt expired')
       )
     ) {
-      // navigate('/register')
+      removeToken()
     }
   })
 
@@ -67,7 +64,7 @@ export const ApolloClientProvider: React.FC<ApolloClientProviderProps> = (
     hasSubscriptionOperation,
     new GraphQLWsLink(
       createClient({
-        url: `${NX_API_SCHEME_WS}://localhost:4300/${NX_API_ENDPOINT}`,
+        url: `${NX_API_SCHEME_WS}://${NX_API_HOST}/${NX_API_ENDPOINT}`,
         shouldRetry: () => true,
         connectionParams: () => {
           return {
@@ -82,7 +79,7 @@ export const ApolloClientProvider: React.FC<ApolloClientProviderProps> = (
   )
 
   const apolloClient: ApolloClient<NormalizedCacheObject> = new ApolloClient({
-    link: ApolloLink.from([authMiddleware, apolloLink]),
+    link: ApolloLink.from([authMiddleware, logoutLink, apolloLink]),
     cache,
     connectToDevTools: true,
   })
