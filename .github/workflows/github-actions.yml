@@ -2,47 +2,16 @@ name: build
 run-name: build
 on: [push]
 jobs:
-  # build-with-bun:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v4
-  #     - name: Install asdf & tools
-  #       uses: asdf-vm/actions/install@v2
-  #     - run: node -v
-  #     - run: bun install --frozen-lockfile
-  #     - run: bun run test
-  #     - run: bun run build
-  # build-with-yarn:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v4
-  #     - name: Install asdf & tools
-  #       uses: asdf-vm/actions/install@v2
-  #     - run: node -v
-  #     - run: yarn install --frozen-lockfile
-  #     - run: yarn test
-  #     - run: yarn build
-  # build-with-npm:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v4
-  #     - name: Install asdf & tools
-  #       uses: asdf-vm/actions/install@v2
-  #     - run: node -v
-  #     - run: npm install --force --frozen-lockfile
-  #     - run: npm run test
-  #     - run: npm run build
   build:
     runs-on: ubuntu-latest
     steps:
+      # setup
       - name: Check out repository code
         uses: actions/checkout@v4
       - name: Install asdf & tools
         uses: asdf-vm/actions/install@v2
 
+      # cache
       - name: Get pnpm cache directory path
         id: pnpm-cache-path
         run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
@@ -54,7 +23,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-
 
-      - run: node -v
+      # actual work
       - run: pnpm install --frozen-lockfile
       - run: pnpm run test
       - run: pnpm run build
