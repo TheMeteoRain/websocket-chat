@@ -19,20 +19,44 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Install latest bun
-        uses: oven-sh/setup-bun@v1
-        with:
-          bun-version: latest
       - name: Check out repository code
         uses: actions/checkout@v4
+      - name: Install asdf & tools
+        uses: asdf-vm/actions/install@v2
+      - run: node -v
       - run: bun install --frozen-lockfile
       - run: bun run test
       - run: bun run build
-  # build-with-yarn:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Check out repository code
-  #       uses: actions/checkout@v4
-  #     - run: yarn install --frozen-lockfile
-  #     - run: yarn test
-  #     - run: yarn build
+  build-with-yarn:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Install asdf & tools
+        uses: asdf-vm/actions/install@v2
+      - run: node -v
+      - run: yarn install --frozen-lockfile
+      - run: yarn test
+      - run: yarn build
+  build-with-npm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Install asdf & tools
+        uses: asdf-vm/actions/install@v2
+      - run: node -v
+      - run: npm install --force --frozen-lockfile
+      - run: npm run test
+      - run: npm run build
+  build-with-pnpm:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+      - name: Install asdf & tools
+        uses: asdf-vm/actions/install@v2
+      - run: node -v
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run test
+      - run: pnpm run build

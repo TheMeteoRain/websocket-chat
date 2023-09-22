@@ -1,8 +1,8 @@
-import { Express } from 'express-serve-static-core'
 import { NextFunction, Request, Response } from 'express'
+import express from 'express'
 import auth from './auth'
 
-const router = (app: Express) => {
+const router = (app: ReturnType<typeof express>) => {
   app.use(auth)
 
   app.use((error: Error, req: Request, res: Response, next: NextFunction) => {
