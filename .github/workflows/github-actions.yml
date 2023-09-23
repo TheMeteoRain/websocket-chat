@@ -1,29 +1,98 @@
-name: build
+name: CI
 run-name: build
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # setup
-      - name: Check out repository code
-        uses: actions/checkout@v4
-      - name: Install asdf & tools
-        uses: asdf-vm/actions/install@v2
+      - uses: actions/checkout@v4
+      - uses: asdf-vm/actions/install@v2
 
-      # cache
-      - name: Get pnpm cache directory path
-        id: pnpm-cache-path
+      - id: pnpm-store-path
         run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
       - uses: actions/cache@v3
-        id: cache-pnpm
+        id: cache-pnpm-store
         with:
-          path: ${{ steps.pnpm-cache-path.outputs.dir }}
-          key: ${{ runner.os }}-pnpm-${{ hashFiles('pnpm-lock.yaml') }}
+          path: ${{ steps.pnpm-store-path.outputs.dir }}
+          key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
           restore-keys: |
-            ${{ runner.os }}-pnpm-
+            pnpm-store-
+            pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
 
-      # actual work
       - run: pnpm install --frozen-lockfile
-      - run: pnpm run test
       - run: pnpm run build
+
+      - uses: actions/cache@v3
+        id: cache-build
+        with:
+          path: ./*
+          key: ${{ github.sha }}-${{ github.run_number }}
+  lint:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/cache@v3
+        timeout-minutes: 5
+        id: restore-build
+        with:
+          path: ./*
+          key: ${{ github.sha }}-${{ github.run_number }}
+      - uses: asdf-vm/actions/install@v2
+      - run: pnpm lint --force
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/cache@v3
+        id: restore-build
+        with:
+          path: ./*
+          key: ${{ github.sha }}-${{ github.run_number }}
+      - uses: asdf-vm/actions/install@v2
+      - run: pnpm run test
+
+  build-and-push-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: build
+    steps:
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - run: echo "${{ steps.meta.outputs.tags }} xd ${{ steps.meta.outputs.labels }}"
+
+      - uses: actions/cache@v3
+        id: restore-build
+        with:
+          path: ./*
+          key: ${{ github.sha }}-${{ github.run_number }}
+
+      - name: Build and push server image
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: .
+          file: ./apps/server/Dockerfile
+          push: true
+          tags: ghcr.io/themeteorain/chat/server:latest
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and push client image
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: .
+          file: ./apps/client/Dockerfile
+          push: true
+          tags: ghcr.io/themeteorain/chat/client:latest
+          labels: ${{ steps.meta.outputs.labels }}
