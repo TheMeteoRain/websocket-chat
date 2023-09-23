@@ -1,17 +1,34 @@
-# Follow good practices
-# https://docs.docker.com/develop/develop-images/dockerfile_best-practices/#add-or-copy
-# https://snyk.io/wp-content/uploads/10-best-practices-to-containerize-Node.js-web-applications-with-Docker.pdf
-
 # ------------------------------------------------------
-# Base image of the application
+# Base image for local development
 # ------------------------------------------------------
-FROM node:16.14.2-alpine3.15
+FROM node:20.6.0
 
-RUN [ "apk", "--no-cache", "--update", "add", "dumb-init", "bash" ]
+ARG PNPM_VERSION 8.7.6
+ENV NODE_ENV development
+
+RUN apt update && apt upgrade -y
+# https://github.com/Yelp/dumb-init
+RUN apt install dumb-init
+
+# https://pnpm.io/installation
+# https://klabsdev.com/posts/InstallPNPMAlpine/
+RUN curl -L https://unpkg.com/@pnpm/self-installer | node
+
 USER node
-WORKDIR /usr/src
-COPY --chown=node:node . .
-RUN yarn install --immutable --immutable-cache --check-cache
-#ENV NODE_ENV production
+WORKDIR /app
 
-CMD yarn nx serve
+# https://github.com/nrwl/nx/issues/15380#issuecomment-1460652743
+# add extra package for alpine compatibility
+RUN pnpm add @nrwl/nx-linux-x64-gnu @nrwl/nx-linux-x64-musl @nx/nx-darwin-arm64
+COPY --chown=node:node ./pnpm-lock.yaml .
+RUN pnpm fetch
+COPY --chown=node:node . .
+RUN pnpm install -r -offline
+
+# dist folder is not in .dockerignore
+# because production image must be able to read from dist
+# delete dist from development image manually
+RUN rm -rf dist
+
+# Let dumb-init handle being PID 1
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]

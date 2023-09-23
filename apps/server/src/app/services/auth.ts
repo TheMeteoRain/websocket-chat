@@ -44,7 +44,7 @@ const authenticate = async (input: AuthenticateInput): Promise<string> => {
   // currently accepts string | null
   dbJwt.exp = parseInt(dbJwt.exp)
 
-  return jwt.sign(dbJwt, process.env.SECRET, { algorithm: 'HS256' })
+  return jwt.sign(dbJwt, process.env.JWT_SECRET, { algorithm: 'HS256' })
 }
 
 export default {

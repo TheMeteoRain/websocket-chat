@@ -6,7 +6,7 @@ const authMiddleware = () => {
     const authToken = req.headers.authorization
 
     try {
-      jwt.verify(authToken, process.env.SECRET)
+      jwt.verify(authToken, process.env.JWT_SECRET)
     } catch (error) {
       console.log(error)
       return res.status(404).send({

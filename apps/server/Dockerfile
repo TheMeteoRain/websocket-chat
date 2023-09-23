@@ -1,21 +1,27 @@
 # ------------------------------------------------------
 # Production image
 # ------------------------------------------------------
-# This version is not working in raspberrypi
-#FROM node:16.14.2-alpine3.15
-FROM node:16.3.0-alpine3.12
+FROM node:20.6.0-alpine
 
-RUN ["apk", "--update-cache", "upgrade"]
-RUN ["apk", "add", "bash"]
+ENV PNPM_VERSION 8.7.6
+ENV NODE_ENV production
+
+RUN apk --update-cache upgrade
+# https://github.com/Yelp/dumb-init
+RUN apk add dumb-init curl
+
+# https://pnpm.io/installation
+# https://klabsdev.com/posts/InstallPNPMAlpine/
+RUN curl -L https://unpkg.com/@pnpm/self-installer | node
 
 USER node
-ENV NODE_ENV production
-WORKDIR /usr/apps
-COPY --chown=node:node ["./dist/apps/server", "./server"]
-COPY --chown=node:node ["./dist/apps/migration", "./migration"]
-COPY --chown=node:node ["./shell/entrypoint.sh", "./entrypoint.sh"]
-COPY --chown=node:node ["./shell/wait-for-it.sh", "./wait-for-it.sh"]
-RUN ["yarn", "--cwd", "migration", "install"]
-RUN ["yarn", "--cwd", "server", "install"]
+WORKDIR /app
 
-ENTRYPOINT [ "./entrypoint.sh" ]
+COPY --chown=node:node ["./dist/apps/server/pnpm-lock.yaml", "."]
+RUN pnpm fetch
+COPY --chown=node:node ["./dist/apps/server", "."]
+RUN pnpm install --frozen-lockfile --offline
+
+# Let dumb-init handle being PID 1
+ENTRYPOINT ["/usr/bin/dumb-init", "--"]
+CMD ["sh", "-c", "node main.js"]

@@ -68,7 +68,7 @@ const yoga = createYoga({
         memberId: (
           jwt.verify(
             authorization.replace('Bearer ', ''),
-            process.env.SECRET
+            process.env.JWT_SECRET
           ) as JwtToken
         ).memberId,
       }

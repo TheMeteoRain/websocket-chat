@@ -2,45 +2,41 @@ version: '3.8'
 
 services:
   client:
-    container_name: websocket-chat_client
-    image: websocket-chat_base
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     ports:
       - 4200:4200
-    environment:
-      - NODE_ENV=development
     volumes:
-      - ./apps:/usr/src/apps
-      - ./libs:/usr/src/libs
-    command: yarn nx serve client --host 0.0.0.0
+      - ./.:/app/.
+    command: pnpm run nx serve client --host 0.0.0.0
   server:
-    container_name: websocket-chat_server
-    image: websocket-chat_base
-    environment:
-      - NODE_ENV=development
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     ports:
       - 4300:4300
     volumes:
-      - ./apps:/usr/src/apps
-      - ./libs:/usr/src/libs
+      - ./.:/app/.
     depends_on:
       - database
-    command: yarn nx serve server
+    command: pnpm nx serve server
   database:
-    container_name: websocket-chat_database
     image: postgres:13.3-alpine
     ports:
       - '6543:5432'
     env_file:
       - ./apps/migration/.env
   database_migration:
-    container_name: websocket-chat_database_migration
-    image: websocket-chat_base
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     command:
       [
         './shell/wait-for-it.sh',
         'database:5432',
         '--',
-        'yarn',
+        'pnpm',
         'knex',
         'migrate:latest',
       ]

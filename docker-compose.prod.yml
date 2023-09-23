@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   client:
-    container_name: websocket-chat_client
     build:
       context: .
       dockerfile: ./apps/client/Dockerfile
@@ -11,7 +10,6 @@ services:
     environment:
       - PORT=80
   server:
-    container_name: websocket-chat_server
     build:
       context: .
       dockerfile: ./apps/server/Dockerfile

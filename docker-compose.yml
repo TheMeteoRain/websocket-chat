@@ -2,23 +2,10 @@ version: '3.8'
 
 services:
   client:
-    container_name: websocket-chat_client
     build:
       context: .
       dockerfile: ./apps/client/Dockerfile
   server:
-    container_name: websocket-chat_server
     build:
       context: .
       dockerfile: ./apps/server/Dockerfile
-    env_file:
-      - ./apps/server/.env
-    environment:
-      - POSTGRAHILE_EXPORT_GQL_SCHEMA_PATH= # No value. Making sure it is empty in docker environment
-      - POSTGRES_HOST=database
-      - POSTGRES_PORT=5432
-      # wait-for-it environment variables
-      - WAITFORIT_TIMEOUT=5 # Defaul 15
-      #- WAITFORIT_STRICT # Default 0
-      #- WAITFORIT_CHILD # Default 0
-      #- WAITFORIT_QUIET # Default 0

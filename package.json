@@ -3,8 +3,10 @@
   "version": "0.10.0",
   "private": true,
   "engines": {
-    "node": ">=18.17.1",
-    "yarn": ">=1.22.19"
+    "node": ">=20.6.0",
+    "pnpm": ">=8.7.6",
+    "yarn": "do not use",
+    "npm": "do not use"
   },
   "scripts": {
     "nx": "nx",

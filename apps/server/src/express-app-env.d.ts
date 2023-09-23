@@ -10,11 +10,10 @@ declare namespace NodeJS {
     readonly PGPASSWORD: string
     readonly PGPORT: number
     readonly DATABASE_URL: string
-    readonly DB_SSL: boolean
 
     readonly POSTGRAHILE_EXPORT_GQL_SCHEMA_PATH: string
 
-    readonly SECRET: string
+    readonly JWT_SECRET: string
   }
 }
 
