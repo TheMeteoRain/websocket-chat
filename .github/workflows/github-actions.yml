@@ -86,7 +86,7 @@ jobs:
           context: .
           file: ./apps/server/Dockerfile
           push: true
-          tags: ghcr.io/$themeteorain/chat/server:latest
+          tags: ghcr.io/themeteorain/chat/server:latest
           labels: ${{ steps.meta.outputs.labels }}
       - name: Build and push client image
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
@@ -94,5 +94,5 @@ jobs:
           context: .
           file: ./apps/client/Dockerfile
           push: true
-          tags: ghcr.io/$themeteorain/chat/client:latest
+          tags: ghcr.io/themeteorain/chat/client:latest
           labels: ${{ steps.meta.outputs.labels }}
