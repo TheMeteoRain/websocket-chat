@@ -13,8 +13,13 @@ import { createClient } from 'graphql-ws'
 import React from 'react'
 import { cache } from './cache'
 
-const { NX_API_SCHEME_WS, NX_API_SCHEME_HTTP, NX_API_HOST, NX_API_ENDPOINT } =
-  process.env
+const {
+  NX_API_SCHEME_WS,
+  NX_API_SCHEME_HTTP,
+  NX_API_HOST,
+  NX_API_ENDPOINT,
+  NX_API_PORT,
+} = process.env
 
 export interface ApolloClientProviderProps {
   children: React.ReactNode
@@ -63,7 +68,7 @@ export const ApolloClientProvider: React.FC<ApolloClientProviderProps> = (
     hasSubscriptionOperation,
     new GraphQLWsLink(
       createClient({
-        url: `${NX_API_SCHEME_WS}://${NX_API_HOST}/${NX_API_ENDPOINT}`,
+        url: `${NX_API_SCHEME_WS}://${NX_API_HOST}:${NX_API_PORT}/${NX_API_ENDPOINT}`,
         shouldRetry: () => true,
         connectionParams: () => {
           return {
@@ -73,7 +78,7 @@ export const ApolloClientProvider: React.FC<ApolloClientProviderProps> = (
       })
     ),
     new HttpLink({
-      uri: `${NX_API_SCHEME_HTTP}://${NX_API_HOST}/${NX_API_ENDPOINT}`,
+      uri: `${NX_API_SCHEME_HTTP}://${NX_API_HOST}:${NX_API_PORT}/${NX_API_ENDPOINT}`,
     })
   )
 
