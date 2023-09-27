@@ -8,6 +8,7 @@ services:
     ports:
       - 4200:80
     environment:
+      - PORT=80
       - NX_API_SCHEME_HTTP=https
       - NX_API_SCHEME_WS=wss
       - NX_API_HOST=127.0.0.1
