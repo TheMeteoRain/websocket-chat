@@ -1,55 +1,26 @@
 version: '3.8'
 
 services:
-  client:
+  chat-client:
     build:
       context: .
-      dockerfile: ./Dockerfile
-    ports:
-      - 4200:4200
-    volumes:
-      - ./.:/app/.
-    command: pnpm run nx serve client --host 0.0.0.0
-  server:
+      dockerfile: ./apps/client/Dockerfile
+    networks:
+      - chat_network
+
+  chat-server:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./apps/server/Dockerfile
     ports:
       - 4300:4300
-    volumes:
-      - ./.:/app/.
-    depends_on:
-      - database
-    command: pnpm nx serve server
-  database:
-    image: postgres:13.3-alpine
-    ports:
-      - '6543:5432'
-    env_file:
-      - ./apps/migration/.env
-  database_migration:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    command:
-      [
-        './shell/wait-for-it.sh',
-        'database:5432',
-        '--',
-        'pnpm',
-        'knex',
-        'migrate:latest',
-      ]
-    env_file:
-      - ./apps/migration/.env
     environment:
-      # Overwrite environment variables
-      - POSTGRES_HOST=database
+      - PORT=4300
+      - JWT_SECRET=SALAINEN
+      - POSTGRES_DB=chat
+      - POSTGRES_USER=chat_user
+      - POSTGRES_PASSWORD=salainen
+      - POSTGRES_HOST=chat-database
       - POSTGRES_PORT=5432
-      # wait-for-it environment variables
-      - WAITFORIT_TIMEOUT=5 # Defaul 15
-      #- WAITFORIT_STRICT # Default 0
-      #- WAITFORIT_CHILD # Default 0
-      #- WAITFORIT_QUIET # Default 0
-    depends_on:
-      - database
+    networks:
+      - chat_network

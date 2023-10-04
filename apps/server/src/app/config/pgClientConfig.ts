@@ -1,9 +1,15 @@
-const { PGHOST, PGUSER, PGDATABASE, PGPASSWORD, PGPORT, NODE_ENV } = process.env
+const {
+  POSTGRES_HOST,
+  POSTGRES_USER,
+  POSTGRES_DB,
+  POSTGRES_PASSWORD,
+  POSTGRES_PORT,
+} = process.env
 
 export default {
-  user: PGUSER,
-  host: PGHOST,
-  database: PGDATABASE,
-  password: PGPASSWORD,
-  port: PGPORT,
+  user: POSTGRES_USER,
+  host: POSTGRES_HOST,
+  database: POSTGRES_DB,
+  password: POSTGRES_PASSWORD,
+  port: POSTGRES_PORT,
 }

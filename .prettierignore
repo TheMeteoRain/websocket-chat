@@ -2,3 +2,7 @@
 
 /dist
 /coverage
+/node_modules
+# yo, prettier is stupid and it won't allow disabling EOL
+# ignore prettier for ansible so it doesn't break the code
+/ansible

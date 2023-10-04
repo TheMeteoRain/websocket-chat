@@ -4,7 +4,8 @@
     "paths": {
       "@src/*": ["apps/migration/src/app/*"],
       "@app/*": ["apps/migration/*"]
-    }
+    },
+    "typeRoots": ["../../node_modules/@types", "src/node-env.d.ts"]
   },
   "files": [],
   "include": [],

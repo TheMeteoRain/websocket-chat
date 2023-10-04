@@ -10,7 +10,6 @@ const {
   POSTGRES_PASSWORD,
   POSTGRES_HOST,
   POSTGRES_PORT,
-  DEPLOYMENT,
 } = process.env
 
 export type KnexEnvironmentConfig = Record<typeof NODE_ENV, Knex.Config>
@@ -23,9 +22,6 @@ export default <KnexEnvironmentConfig>{
       password: POSTGRES_PASSWORD,
       host: POSTGRES_HOST,
       port: POSTGRES_PORT,
-      ...(((DEPLOYMENT as unknown) as boolean) === true
-        ? { ssl: { rejectUnauthorized: false } }
-        : undefined),
     },
     pool: {
       min: 1,

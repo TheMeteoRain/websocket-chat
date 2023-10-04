@@ -59,7 +59,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    needs: build
+    needs: [build, test, lint]
     steps:
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
@@ -95,4 +95,12 @@ jobs:
           file: ./apps/client/Dockerfile
           push: true
           tags: ghcr.io/themeteorain/chat/client:latest
+          labels: ${{ steps.meta.outputs.labels }}
+      - name: Build and push proxy image
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: .
+          file: ./apps/server/Dockerfile.nginx.proxy
+          push: true
+          tags: ghcr.io/themeteorain/chat/proxy:latest
           labels: ${{ steps.meta.outputs.labels }}

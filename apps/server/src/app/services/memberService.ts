@@ -1,4 +1,3 @@
-import knex from '@src/app/config/knex'
 import pg from '@src/app/config/pg'
 import { Member } from '@libs/types/lib/models/db'
 

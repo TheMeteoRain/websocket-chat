@@ -28,9 +28,7 @@ routes(app)
 const server = app.listen(PORT, () => {
   console.log(`✨ Server listening on port ${PORT}`)
   console.log(`🚀 http://localhost:${PORT}`)
-  if (NODE_ENV === 'development') {
-    console.log(`🚀 http://localhost:${PORT}/graphql`)
-  }
+  console.log(`🚀 http://localhost:${PORT}/graphql`)
 
   server.on('error', (error) => {
     console.error(error)

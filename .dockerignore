@@ -54,3 +54,8 @@ Thumbs.db
 # Environment files
 
 .env\*.local
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault

@@ -1,11 +1,64 @@
 version: '3.8'
 
 services:
-  client:
+  chat-server:
+    depends_on:
+      chat-database:
+        condition: service_healthy
+
+  chat-proxy:
     build:
       context: .
-      dockerfile: ./apps/client/Dockerfile
-  server:
+      dockerfile: ./Dockerfile.nginx.proxy
+    ports:
+      - 4200:80
+      - 4201:443
+    environment:
+      - PORT=80
+    networks:
+      - chat_network
+    depends_on:
+      - chat-client
+      - chat-server
+
+  chat-database:
+    image: postgres:16.0-alpine
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready --user chat_user -d chat']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - '6543:5432'
+    environment:
+      - POSTGRES_DB=chat
+      - POSTGRES_USER=chat_user
+      - POSTGRES_PASSWORD=salainen
+      - POSTGRES_HOST=127.0.0.1
+      - POSTGRES_PORT=5432
+    networks:
+      - chat_network
+
+  # not really lightweight if looking for minimal disk space
+  # this should probably be bundled with server
+  # to reduce disk usage and additional containers
+  chat-database-migrate:
     build:
       context: .
-      dockerfile: ./apps/server/Dockerfile
+      dockerfile: ./Dockerfile
+    command: ['pnpm', 'knex', 'migrate:latest']
+    environment:
+      - POSTGRES_DB=chat
+      - POSTGRES_USER=chat_user
+      - POSTGRES_PASSWORD=salainen
+      - POSTGRES_HOST=chat-database
+      - POSTGRES_PORT=5432
+    depends_on:
+      chat-database:
+        condition: service_healthy
+    networks:
+      - chat_network
+
+networks:
+  chat_network:
+    name: chat_network

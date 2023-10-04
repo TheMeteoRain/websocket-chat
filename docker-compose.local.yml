@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  # cant get to this to work, we out of memory
+  # SIGKILL cleans the process after
+  chat-client:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    volumes:
+      - ./apps/client:/chat/apps/client
+    command:
+      [
+        'sh',
+        '-c',
+        'pnpm run nx serve client --host 0.0.0.0 --maxWorkers=1 --memoryLimit=2056 --verbose',
+      ]
+    networks:
+      - chat_network
+
+  chat-server:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 4300:4300
+    environment:
+      - POSTGRES_HOST=chat-database
+      - POSTGRES_PORT=5432
+    volumes:
+      - ./apps/server:/chat/apps/server
+    depends_on:
+      - chat-database
+    command: ['sh', '-c', 'pnpm nx serve server']
+    networks:
+      - chat_network
