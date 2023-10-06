@@ -68,7 +68,7 @@ export const ApolloClientProvider: React.FC<ApolloClientProviderProps> = (
     hasSubscriptionOperation,
     new GraphQLWsLink(
       createClient({
-        url: `${NX_API_SCHEME_WS}://${NX_API_HOST}:${NX_API_PORT}/${NX_API_ENDPOINT}`,
+        url: `${NX_API_SCHEME_WS}://${NX_API_HOST}/${NX_API_ENDPOINT}`,
         shouldRetry: () => true,
         connectionParams: () => {
           return {
@@ -78,7 +78,7 @@ export const ApolloClientProvider: React.FC<ApolloClientProviderProps> = (
       })
     ),
     new HttpLink({
-      uri: `${NX_API_SCHEME_HTTP}://${NX_API_HOST}:${NX_API_PORT}/${NX_API_ENDPOINT}`,
+      uri: `${NX_API_SCHEME_HTTP}://${NX_API_HOST}/${NX_API_ENDPOINT}`,
     })
   )
 
