@@ -6,11 +6,10 @@
 # ------------------------------------------------------
 # Install dependencies and build application
 # ------------------------------------------------------
-FROM node:16.3.0
+FROM node:20.6.0-alpine3.18
 
 WORKDIR /usr/src/migration
 COPY ./dist/apps/migration .
-COPY ./shell/wait-for-it.sh wait-for-it.sh
 
 RUN yarn install --production
 

@@ -1,14 +1,15 @@
 # ------------------------------------------------------
 # Base image for local development
 # ------------------------------------------------------
-FROM node:20.6.0-alpine
+FROM node:20.6.0-alpine3.18
 
 ARG PNPM_VERSION 8.7.6
 ENV NODE_ENV development
 
 RUN apk --update-cache upgrade
 # https://github.com/Yelp/dumb-init
-RUN apk add dumb-init curl vim
+# python3 make g++ required for apple silicon
+RUN apk add dumb-init curl vim python3 make g++
 
 # https://pnpm.io/installation
 # https://klabsdev.com/posts/InstallPNPMAlpine/
