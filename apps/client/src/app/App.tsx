@@ -103,6 +103,7 @@ const AppRoutes = () => {
           }
         />
         <Route path='/404' Component={NotFound} />
+        <Route path='*' element={<NotFound />} />
       </Routes>
     </Router>
   )
