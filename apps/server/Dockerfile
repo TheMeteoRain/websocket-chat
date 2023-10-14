@@ -23,6 +23,8 @@ RUN pnpm fetch
 COPY --chown=node:node ["./dist/apps/server", "./"]
 RUN pnpm install --frozen-lockfile --offline
 
+EXPOSE 4300/tcp
+
 # Let dumb-init handle being PID 1
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
 CMD ["sh", "-c", "node main.js"]
