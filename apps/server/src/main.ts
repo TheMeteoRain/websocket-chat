@@ -9,7 +9,7 @@ import morgan from 'morgan'
 import { Server as WebSocketServer } from 'ws'
 import routes from './app/routes'
 
-const { PORT, NODE_ENV } = process.env
+const { PORT } = process.env
 
 // setup
 dotenv.config()
