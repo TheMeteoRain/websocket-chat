@@ -9,6 +9,15 @@ import jwt from 'jsonwebtoken'
 const yogaRouter = express.Router()
 const yoga = createYoga({
   schema,
+  cors: (request) => {
+    const requestOrigin = request.headers.get('origin')
+    return {
+      origin: requestOrigin,
+      credentials: true,
+      allowedHeaders: ['X-Custom-Header'],
+      methods: ['POST'],
+    }
+  },
   graphiql: {
     subscriptionsProtocol: 'WS',
     defaultQuery: `
