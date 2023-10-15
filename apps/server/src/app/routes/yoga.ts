@@ -1,31 +1,23 @@
-import schema from '@src/app/graphql/schema'
+import { renderGraphiQL as renderGraphiQLFn } from '@graphql-yoga/render-graphiql'
 import { JwtToken } from '@libs/types/lib/models/db'
+import schema from '@src/app/graphql/schema'
 import express from 'express'
 import { ConnectionInitMessage, Context } from 'graphql-ws/lib'
 import { YogaInitialContext, createYoga } from 'graphql-yoga'
-import helmet from 'helmet'
 import jwt from 'jsonwebtoken'
 
 const yogaRouter = express.Router()
 const yoga = createYoga({
   schema,
-  cors: (request) => {
-    const requestOrigin = request.headers.get('origin')
-    return {
-      origin: requestOrigin,
-      credentials: true,
-      allowedHeaders: ['X-Custom-Header'],
-      methods: ['POST'],
-    }
-  },
-  graphiql: {
-    subscriptionsProtocol: 'WS',
-    defaultQuery: `
+  renderGraphiQL: () =>
+    renderGraphiQLFn({
+      subscriptionsProtocol: 'WS',
+      defaultQuery: `
       query {
         hello
       }
     `,
-  },
+    }),
   logging: {
     debug(...args) {
       console.debug(...args)
@@ -87,19 +79,6 @@ const yoga = createYoga({
   },
 })
 
-yogaRouter.use(
-  helmet({
-    contentSecurityPolicy: {
-      directives: {
-        'style-src': ["'self'", 'unpkg.com'],
-        'script-src': ["'self'", 'unpkg.com', "'unsafe-inline'"],
-        'img-src': ["'self'", 'raw.githubusercontent.com'],
-      },
-    },
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: { policy: 'cross-origin' },
-  })
-)
 yogaRouter.use(
   //@ts-ignore
   yoga

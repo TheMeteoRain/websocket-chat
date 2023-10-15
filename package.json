@@ -50,6 +50,7 @@
     "@graphql-tools/delegate": "^10.0.3",
     "@graphql-tools/schema": "^10.0.0",
     "@graphql-tools/stitch": "^9.0.1",
+    "@graphql-yoga/render-graphiql": "^4.0.5",
     "@material-ui/core": "^4.11.3",
     "@material-ui/icons": "^5.0.0-beta.1",
     "@react-hookz/web": "1.24.0",

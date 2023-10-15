@@ -23,6 +23,9 @@ dependencies:
   '@graphql-tools/stitch':
     specifier: ^9.0.1
     version: 9.0.3(graphql@16.8.1)
+  '@graphql-yoga/render-graphiql':
+    specifier: ^4.0.5
+    version: 4.0.5(graphql-yoga@4.0.4)
   '@material-ui/core':
     specifier: ^4.11.3
     version: 4.12.4(@types/react@18.2.14)(react-dom@18.2.0)(react@18.2.0)
@@ -3123,6 +3126,15 @@ packages:
     engines: {node: '>=16.0.0'}
     dependencies:
       tslib: 2.6.2
+    dev: false
+
+  /@graphql-yoga/render-graphiql@4.0.5(graphql-yoga@4.0.4):
+    resolution: {integrity: sha512-BUS7M5QdZdBQVKl1xohOEAlM00uvaqogPsQEya5hm5jnuDsYUNGa7zYkD+wkR4caExVCjZg37KyUftoBNXxjyw==}
+    engines: {node: '>=16.0.0'}
+    peerDependencies:
+      graphql-yoga: ^4.0.5
+    dependencies:
+      graphql-yoga: 4.0.4(graphql@16.8.1)
     dev: false
 
   /@graphql-yoga/subscription@4.0.0:
