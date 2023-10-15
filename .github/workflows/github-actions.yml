@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     steps:
-      - run: echo "$NX_API_HOST"
-      - run: echo "$GITHUB_CONTEXT"
       - uses: actions/checkout@v4
       - uses: asdf-vm/actions/install@v2
 
