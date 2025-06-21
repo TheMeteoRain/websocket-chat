@@ -1,0 +1,17 @@
+FROM node:24.1.0
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV NODE_ENV production
+ENV CI=1
+
+RUN corepack enable
+
+ENV PORT=5200
+ENV TZ=UTC
+ENV LANG=en_US.UTF-8
+
+WORKDIR /opt/rally
+
+
+CMD [ "node",  "apps/client/server.js" ]

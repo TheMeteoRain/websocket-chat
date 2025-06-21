@@ -1,0 +1,19 @@
+{
+  "name": "@rally/client",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/client/app",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nx/vite:build",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "apps/client/build",
+        "generatePackageJson": true,
+        "tsConfig": "apps/client/tsconfig.app.json",
+        "configFile": "apps/client/vite.config.ts"
+      }
+    }
+  },
+  "tags": []
+}

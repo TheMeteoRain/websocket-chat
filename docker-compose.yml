@@ -1,28 +1,30 @@
 version: '3.8'
 
 services:
-  chat-server:
+  client:
     depends_on:
-      chat-database:
-        condition: service_healthy
-
-  chat-proxy:
-    build:
-      context: .
-      dockerfile: ./Dockerfile.nginx.proxy
-    ports:
-      - 4200:80
-      - 4201:443
-    environment:
-      - PORT=80
+      - server
     networks:
-      - chat_network
-    depends_on:
-      - chat-client
-      - chat-server
+      - rally_network
 
-  chat-database:
-    image: postgres:16.0-alpine
+  server:
+    depends_on:
+      database:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    networks:
+      - rally_network
+
+  migrate:
+    depends_on:
+      database:
+        condition: service_healthy
+    networks:
+      - rally_network
+
+  database:
+    image: postgres:17.5-alpine
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready --user chat_user -d chat']
       interval: 10s
@@ -37,28 +39,8 @@ services:
       - POSTGRES_HOST=127.0.0.1
       - POSTGRES_PORT=5432
     networks:
-      - chat_network
-
-  # not really lightweight if looking for minimal disk space
-  # this should probably be bundled with server
-  # to reduce disk usage and additional containers
-  chat-database-migrate:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    command: ['pnpm', 'knex', 'migrate:latest']
-    environment:
-      - POSTGRES_DB=chat
-      - POSTGRES_USER=chat_user
-      - POSTGRES_PASSWORD=salainen
-      - POSTGRES_HOST=chat-database
-      - POSTGRES_PORT=5432
-    depends_on:
-      chat-database:
-        condition: service_healthy
-    networks:
-      - chat_network
+      - rally_network
 
 networks:
-  chat_network:
-    name: chat_network
+  rally_network:
+    name: rally_network

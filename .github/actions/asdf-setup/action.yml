@@ -1,0 +1,15 @@
+name: Setup asdf
+description: Cache asdf and install tools
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/cache@v4
+      with:
+        path: ~/.asdf
+        key: ${{ runner.os }}-asdf-${{ hashFiles('**/.tool-versions') }}
+
+    - uses: asdf-vm/actions/install@v4.0.0
+
+    - name: Reshim asdf
+      run: asdf reshim
+      shell: bash

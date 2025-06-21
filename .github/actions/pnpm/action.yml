@@ -1,0 +1,20 @@
+name: Cache install with cache
+description: Cache pnpm and install
+runs:
+  using: 'composite'
+  steps:
+    - name: Set cache
+      id: pnpm-store-path
+      run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
+      shell: bash
+
+    - uses: actions/cache@v4
+      id: cache-pnpm-store
+      with:
+        path: ${{ steps.pnpm-store-path.outputs.dir }}
+        key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+        restore-keys: |
+          pnpm-store-
+
+    - run: pnpm install --frozen-lockfile
+      shell: bash

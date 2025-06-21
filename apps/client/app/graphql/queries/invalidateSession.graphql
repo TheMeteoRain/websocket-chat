@@ -1,0 +1,3 @@
+query InvalidateSession($token: String!) {
+  invalidateSession(token: $token)
+}

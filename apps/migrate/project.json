@@ -1,0 +1,79 @@
+{
+  "name": "migrate",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/migrate/src",
+  "projectType": "application",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/esbuild:esbuild",
+      "outputs": ["{options.outputPath}"],
+      "defaultConfiguration": "production",
+      "options": {
+        "platform": "node",
+        "outputPath": "apps/migrate/dist",
+        "format": ["esm"],
+        "bundle": false,
+        "main": "apps/migrate/src/main.ts",
+        "tsConfig": "apps/migrate/tsconfig.app.json",
+        "assets": ["apps/migrate/src/assets"],
+        "esbuildOptions": {
+          "sourcemap": true,
+          "outExtension": {
+            ".js": ".js"
+          }
+        }
+      },
+      "configurations": {
+        "development": {},
+        "production": {
+          "generateLockfile": true,
+          "esbuildOptions": {
+            "sourcemap": false,
+            "outExtension": {
+              ".js": ".js"
+            }
+          }
+        }
+      }
+    },
+    "serve": {
+      "continuous": true,
+      "executor": "@nx/js:node",
+      "defaultConfiguration": "development",
+      "dependsOn": ["build"],
+      "options": {
+        "buildTarget": "migrate:build",
+        "runBuildTargetDependencies": false
+      },
+      "configurations": {
+        "development": {
+          "buildTarget": "migrate:build:development"
+        },
+        "production": {
+          "buildTarget": "migrate:build:production"
+        }
+      }
+    },
+    "docker-build": {
+      "dependsOn": ["build"],
+      "command": "docker build -f apps/migrate/Dockerfile . -t migrate"
+    },
+    "generate-package-json": {
+      "executor": "@rally/generate-package-json:generate-package-json",
+      "options": {
+        "outputPath": "{workspaceRoot}/apps/migrate/dist"
+      }
+    },
+    "build-with-package-json": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx run migrate:build --tuiAutoExit",
+          "nx run migrate/generate-package-json:build",
+          "nx run migrate:generate-package-json"
+        ]
+      }
+    }
+  }
+}

@@ -1,0 +1,19 @@
+subscription Channel {
+  newChannel {
+    id
+    createdAt
+    updatedAt
+    members {
+      id
+      firstName
+      lastName
+    }
+    messages {
+      id
+      text
+      memberId
+      createdAt
+      updatedAt
+    }
+  }
+}

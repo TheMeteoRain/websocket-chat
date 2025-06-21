@@ -1,10 +1,10 @@
 extend type Member {
-  channels: [ChannelMember]!
+  channels: [ChannelMember!]!
 }
 
 extend type Channel {
-  members: [Member]!
-  messages: [Message]!
+  members: [Member!]!
+  messages: [Message!]!
 }
 
 # extend type Channel {

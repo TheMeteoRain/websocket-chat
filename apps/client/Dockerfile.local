@@ -1,0 +1,45 @@
+FROM rally-base as build
+LABEL stage=client-build
+
+ARG VITE_NX_API_SCHEME_HTTP=http
+ARG VITE_NX_API_SCHEME_WS=ws
+ARG VITE_NX_API_HOST=localhost
+ARG VITE_NX_API_HOST_SSR=server
+ARG VITE_NX_API_PORT=5300
+ARG VITE_NX_API_ENDPOINT=graphql
+
+ENV VITE_NX_API_SCHEME_HTTP=$VITE_NX_API_SCHEME_HTTP
+ENV VITE_NX_API_SCHEME_WS=$VITE_NX_API_SCHEME_WS
+ENV VITE_NX_API_HOST=$VITE_NX_API_HOST
+ENV VITE_NX_API_HOST_SSR=$VITE_NX_API_HOST_SSR
+ENV VITE_NX_API_PORT=$VITE_NX_API_PORT
+ENV VITE_NX_API_ENDPOINT=$VITE_NX_API_ENDPOINT
+
+RUN pnpm nx run @rally/client:build
+RUN pnpm nx run @rally/client:generate-package-json
+
+FROM node:24.1.0-slim
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV NODE_ENV production
+ENV CI=1
+
+RUN corepack enable
+
+ENV PORT=5200
+ENV TZ=UTC
+ENV LANG=en_US.UTF-8
+
+WORKDIR /opt/rally
+RUN adduser --group --system rally
+RUN chown -R rally:rally .
+
+COPY --chown=rally:rally --from=build /opt/rally/apps/client/build/ ./build
+RUN mv ./build/package.json ./package.json
+RUN mv ./build/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --chown=rally:rally --from=build /opt/rally/apps/client/server.js ./server.js
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+USER rally
+
+CMD [ "node",  "server.js" ]

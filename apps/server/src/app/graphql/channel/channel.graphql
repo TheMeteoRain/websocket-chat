@@ -15,10 +15,10 @@ type ChannelMember {
 
 type Query {
   channelById(id: UUID!): Channel
-  channelsByMemberId(memberId: UUID!): [Channel]!
+  channelsByMemberId(memberId: UUID!): [Channel!]!
 }
 
 type Subscription {
-  newChannel: ChannelMember
+  newChannel: Channel
   countdown(from: Int): String
 }

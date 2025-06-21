@@ -1,0 +1,48 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    // {
+    //   "name": "Debug Node App",
+    //   "type": "node",
+    //   "request": "attach",
+    //   "port": 7777
+    // }
+    {
+      "type": "chrome",
+      "request": "launch",
+      "name": "Launch Chrome Debugger",
+      "url": "http://localhost:4300",
+      "webRoot": "${workspaceFolder}",
+      "presentation": {
+        "hidden": true
+      }
+    },
+    {
+      "command": "pnpm nx run wep:serve",
+      "name": "Debug App One",
+      "cwd": "${workspaceFolder}",
+      "request": "launch",
+      "type": "node-terminal",
+      "serverReadyAction": {
+        "action": "startDebugging",
+        "name": "Launch Chrome Debugger",
+        "pattern": "Server listening on port 4300"
+      }
+    },
+    {
+      "command": "pnpm nx run wep:serve",
+      "name": "Debug App Two",
+      "cwd": "${workspaceFolder}",
+      "request": "launch",
+      "type": "node-terminal",
+      "serverReadyAction": {
+        "action": "startDebugging",
+        "name": "Launch Chrome Debugger",
+        "pattern": "Server listening on port 4300"
+      }
+    }
+  ]
+}

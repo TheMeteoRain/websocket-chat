@@ -1,0 +1,33 @@
+FROM rally-base as build
+LABEL stage=server-build
+RUN pnpm nx run server:build
+
+FROM node:24.1.0-slim
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV NODE_ENV=production
+ENV CI=1
+
+ENV PORT=5300
+ENV JWT_SECRET=SALAINEN
+ENV POSTGRES_HOST=127.0.0.1
+ENV POSTGRES_USER=chat_user
+ENV POSTGRES_DB=chat
+ENV POSTGRES_PASSWORD=salainen
+ENV POSTGRES_PORT=6543
+
+ENV PORT=5300
+ENV TZ=UTC
+ENV LANG=en_US.UTF-8
+
+RUN corepack enable
+
+WORKDIR /opt/rally
+RUN adduser --group --system rally
+RUN chown -R rally:rally .
+
+COPY --chown=rally:rally --from=build /opt/rally/apps/server/dist .
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+USER rally
+
+CMD [ "node",  "main.js" ]

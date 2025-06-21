@@ -1,10 +1,12 @@
-import { Channel } from '@libs/types/lib/models/db'
-import pg from '@src/app/config/pg'
+import { Channel } from '@rally/types/db'
+import pg from '../config/pg'
 
 export interface ChannelByIdInput {
   id: string
 }
-const channelById = async (input: ChannelByIdInput): Promise<Channel> => {
+export const channelById = async (
+  input: ChannelByIdInput
+): Promise<Channel> => {
   const { id } = input
 
   const result = await pg.query<Channel>(
@@ -18,7 +20,7 @@ const channelById = async (input: ChannelByIdInput): Promise<Channel> => {
 export interface ChannelsByMemberIdInput {
   memberId: string
 }
-const channelsByMemberId = async (
+export const channelsByMemberId = async (
   input: ChannelsByMemberIdInput
 ): Promise<Channel[]> => {
   const { memberId } = input
@@ -33,9 +35,4 @@ const channelsByMemberId = async (
   )
 
   return result.rows
-}
-
-export default {
-  channelById,
-  channelsByMemberId,
 }

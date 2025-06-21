@@ -1,10 +1,18 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
+    "outDir": "dist",
+    "module": "esnext",
     "types": ["node", "express"],
-    "typeRoots": ["../../node_modules/@types", "src/express-app-env.d.ts"]
+    "moduleResolution": "bundler",
+    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
+    "rootDirs": ["src", "../../libs/types/src"]
   },
-  "exclude": ["**/*.spec.ts", "**/*.test.ts", "jest.config.ts"],
-  "include": ["**/*.ts"]
+  "include": ["src/**/*.ts", "../../libs/types/src/lib/**/*.ts"],
+  "exclude": ["node_modules"],
+  "references": [
+    {
+      "path": "../../libs/types/tsconfig.lib.json"
+    }
+  ]
 }

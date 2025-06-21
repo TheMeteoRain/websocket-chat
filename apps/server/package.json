@@ -1,0 +1,41 @@
+{
+  "name": "@rally/wep",
+  "version": "0.0.1",
+  "private": true,
+  "dependencies": {
+    "@graphql-tools/delegate": "^10.2.19",
+    "@graphql-tools/schema": "^10.0.23",
+    "@graphql-tools/stitch": "^9.4.24",
+    "@graphql-tools/webpack-loader": "^7.0.0",
+    "@luckycatfactory/esbuild-graphql-loader": "^3.8.1",
+    "bufferutil": "^4.0.9",
+    "compression": "^1.8.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^16.5.0",
+    "eslint-plugin-graphql": "^4.0.0",
+    "graphql": "^16.11.0",
+    "graphql-postgres-subscriptions": "^1.0.5",
+    "graphql-scalars": "^1.24.2",
+    "graphql-ws": "^6.0.5",
+    "graphql-yoga": "^5.13.5",
+    "helmet": "^8.1.0",
+    "js-cookie": "^3.0.5",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "pg": "^8.16.0",
+    "pg-native": "^3.5.0",
+    "tslib": "^2.8.1",
+    "utf-8-validate": "^6.0.5",
+    "ws": "^8.18.2"
+  },
+  "devDependencies": {
+    "@types/compression": "^1.8.0",
+    "@types/cookie-parser": "^1.4.9",
+    "@types/js-cookie": "^3.0.6",
+    "@types/jsonwebtoken": "^9.0.9",
+    "@types/morgan": "^1.9.9",
+    "@types/pg": "^8.15.4",
+    "@types/ws": "^8.18.1",
+    "webpack": "^5.99.9"
+  }
+}

@@ -1,0 +1,29 @@
+FROM rally-base as build
+LABEL stage=migrate-build
+RUN pnpm nx run migrate:build
+RUN pnpm nx run migrate:generate-package-json
+
+FROM node:24.1.0-slim
+
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+ENV NODE_ENV=production
+ENV CI=1
+
+ENV TZ=UTC
+ENV LANG=en_US.UTF-8
+
+ENV DATABASE_URL=postgresql://chat_user:salainen@database:5432/chat
+ENV ROLE=member
+
+RUN corepack enable
+
+WORKDIR /opt/rally
+RUN adduser --group --system rally
+RUN chown -R rally:rally .
+
+COPY --chown=rally:rally --from=build /opt/rally/apps/migrate/dist .
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install
+USER rally
+
+CMD [ "node",  "main.js" ]

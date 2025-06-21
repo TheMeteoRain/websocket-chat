@@ -1,108 +1,113 @@
 name: CI
 run-name: build
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
-on: [push]
+  NX_CLOUD: false
+
+on:
+  push:
+    branches:
+      - develop
+
 jobs:
-  build:
+  install:
     runs-on: ubuntu-latest
     environment: production
     steps:
       - uses: actions/checkout@v4
-      - uses: asdf-vm/actions/install@v2
+      - uses: ./.github/actions/asdf-setup
+      - uses: ./.github/actions/pnpm
 
-      - id: pnpm-store-path
-        run: echo "dir=$(pnpm store path)" >> $GITHUB_OUTPUT
-      - uses: actions/cache@v3
-        id: cache-pnpm-store
-        with:
-          path: ${{ steps.pnpm-store-path.outputs.dir }}
-          key: pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            pnpm-store-
-            pnpm-store-${{ hashFiles('pnpm-lock.yaml') }}
+  build:
+    runs-on: ubuntu-latest
+    needs: install
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/asdf-setup
+      - uses: ./.github/actions/pnpm
 
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm run build
+      - run: pnpm nx run @rally/generate-package-json:build
 
-      - uses: actions/cache@v3
+      - run: rm ./apps/client/.env.local
+      - run: pnpm nx run @rally/client:build --mode=production
+        env:
+          VITE_NX_API_SCHEME_HTTP: ${{ vars.VITE_NX_API_SCHEME_HTTP }}
+          VITE_NX_API_SCHEME_WS: ${{ vars.VITE_NX_API_SCHEME_WS }}
+          VITE_NX_API_HOST: ${{ vars.VITE_NX_API_HOST }}
+          VITE_NX_API_HOST_SSR: ${{ vars.VITE_NX_API_HOST_SSR }}
+          VITE_NX_API_PORT: ${{ vars.VITE_NX_API_PORT }}
+          VITE_NX_API_ENDPOINT: ${{ vars.VITE_NX_API_ENDPOINT }}
+          VITE_NX_API_URL: ${{ vars.VITE_NX_API_URL }}
+          VITE_NX_API_HTTP_URL: ${{ vars.VITE_NX_API_HTTP_URL }}
+          VITE_NX_API_WS_URL: ${{ vars.VITE_NX_API_WS_URL }}
+      - run: pnpm nx run @rally/client:generate-package-json
+
+      - run: pnpm nx run server:build --mode=production
+
+      - run: pnpm nx run migrate:build --mode=production
+      - run: pnpm nx run migrate:generate-package-json
+
+      - uses: actions/cache@v4
         id: cache-build
         with:
-          path: ./*
-          key: ${{ github.sha }}-${{ github.run_number }}
-  lint:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/cache@v3
-        timeout-minutes: 5
-        id: restore-build
-        with:
-          path: ./*
-          key: ${{ github.sha }}-${{ github.run_number }}
-      - uses: asdf-vm/actions/install@v2
-      - run: pnpm lint --force
-  test:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - uses: actions/cache@v3
-        id: restore-build
-        with:
-          path: ./*
-          key: ${{ github.sha }}-${{ github.run_number }}
-      - uses: asdf-vm/actions/install@v2
-      - run: pnpm run test
+          path: |
+            ./apps/**/dist
+            ./apps/**/build
+          key: build-${{ github.sha }}
+          restore-keys: |
+            build-
 
   build-and-push-image:
-    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    needs: [build, test, lint]
+    needs: build
     steps:
+      - uses: actions/checkout@v4
+      - uses: actions/cache@v4
+        id: restore-build
+        with:
+          path: |
+            ./apps/**/dist
+            ./apps/**/build
+          key: build-${{ github.sha }}
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Log in to the Container registry
-        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-      - run: echo "${{ steps.meta.outputs.tags }} xd ${{ steps.meta.outputs.labels }}"
-
-      - uses: actions/cache@v3
-        id: restore-build
-        with:
-          path: ./*
-          key: ${{ github.sha }}-${{ github.run_number }}
 
       - name: Build and push server image
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./apps/server
           file: ./apps/server/Dockerfile
           push: true
-          tags: ghcr.io/themeteorain/chat/server:latest
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ghcr.io/themeteorain/rally/server:latest
+
       - name: Build and push client image
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        uses: docker/build-push-action@v5
         with:
-          context: .
+          context: ./apps/client
           file: ./apps/client/Dockerfile
           push: true
-          tags: ghcr.io/themeteorain/chat/client:latest
-          labels: ${{ steps.meta.outputs.labels }}
-      - name: Build and push proxy image
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+          tags: ghcr.io/themeteorain/rally/client:latest
+
+      - name: Build and push migrate image
+        uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile.nginx.proxy
+          context: ./apps/migrate
+          file: ./apps/migrate/Dockerfile
           push: true
-          tags: ghcr.io/themeteorain/chat/proxy:latest
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: ghcr.io/themeteorain/rally/migrate:latest

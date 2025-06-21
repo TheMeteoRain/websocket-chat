@@ -1,9 +1,16 @@
 {
-  "extends": "./tsconfig.json",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "../../dist/out-tsc",
-    "types": []
+    "baseUrl": ".",
+    "rootDir": "src",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/tsconfig.lib.tsbuildinfo",
+    "emitDeclarationOnly": false,
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"]
   },
-  "include": ["**/*.ts"],
-  "exclude": ["**/*.spec.ts", "**/*.test.ts", "jest.config.ts"]
+  "include": ["src/**/*.ts"],
+  "references": []
 }

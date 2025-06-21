@@ -13,7 +13,7 @@ module.exports = {
     port: '6543',
   },
 
-  outputPath: './libs/types/src/lib/models/db',
+  outputPath: './libs/types/src/lib/db',
   preDeleteOutputFolder: true,
 
   customTypeMap: {

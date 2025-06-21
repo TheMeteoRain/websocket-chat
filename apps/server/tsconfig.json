@@ -1,26 +1,18 @@
 {
   "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    "noImplicitAny": false,
-    "strictNullChecks": false,
-    "noUnusedParameters": false,
-    "noUnusedLocals": false,
-    "lib": ["es2019", "ES2019.Object"],
-    "typeRoots": ["../../node_modules/@types", "src/express-app-env.d.ts"],
-    "paths": {
-      "@src/*": ["apps/server/src/*"],
-      "@app/*": ["apps/server/*"],
-      "@libs/types/*": ["libs/types/src/*"]
-    }
-  },
   "files": [],
   "include": [],
   "references": [
     {
-      "path": "./tsconfig.app.json"
+      "path": "../../libs/types"
     },
     {
-      "path": "./tsconfig.spec.json"
+      "path": "./tsconfig.app.json"
     }
-  ]
+  ],
+  "compilerOptions": {
+    "paths": {
+      "@rally/types/*": ["../..libs/types/src/lib/*"]
+    }
+  }
 }
