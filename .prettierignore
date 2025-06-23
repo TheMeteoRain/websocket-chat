@@ -1,8 +1,5 @@
 # Add files here to ignore them from prettier formatting
-
 /dist
 /coverage
-/node_modules
-# yo, prettier is stupid and it won't allow disabling EOL
-# ignore prettier for ansible so it doesn't break the code
-/ansible
+/.nx/cache
+/.nx/workspace-data

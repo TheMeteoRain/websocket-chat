@@ -1,4 +1,4 @@
-import { Pool, Query, Submittable } from 'pg'
+import { Pool } from 'pg'
 import pgClientConfig from './pgClientConfig'
 import keysToCamelCase from '../utils/keysToCamelCase'
 
@@ -7,7 +7,7 @@ const pool = new Pool(pgClientConfig)
 const originalQuery: typeof pool.query = pool.query.bind(pool)
 pool.query = async function (...args: any) {
   const result = await originalQuery(
-    // @ts-ignore
+    // @ts-expect-error: TODO
     ...args
   )
   if (result.rows) {

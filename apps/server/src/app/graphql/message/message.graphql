@@ -2,12 +2,12 @@ scalar UUID
 scalar DateTimeISO
 
 type Message {
-  id: UUID
-  text: String
-  channelId: UUID
-  memberId: UUID
-  createdAt: DateTimeISO
-  updatedAt: DateTimeISO
+  id: UUID!
+  text: String!
+  channelId: UUID!
+  memberId: UUID!
+  createdAt: DateTimeISO!
+  updatedAt: DateTimeISO!
 }
 
 type Query {

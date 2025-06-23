@@ -1,1 +1,0 @@
-This directory re-exports react components that can't be typed in .d.ts file. Re-exported components contains types specifically for this application. As a result never import these components from react node_modules, instead use the re-exported components for strongly typed versions.

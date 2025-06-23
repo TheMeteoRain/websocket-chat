@@ -1,5 +1,5 @@
-import { Message } from '@libs/types/lib/models/db'
-import pg from '@src/app/config/pg'
+import { Message } from '@rally/types/db'
+import pg from '../config/pg'
 
 export interface MessageByIdInput {
   id: string

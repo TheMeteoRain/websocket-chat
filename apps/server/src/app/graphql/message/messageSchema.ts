@@ -1,15 +1,15 @@
 import { makeExecutableSchema } from '@graphql-tools/schema'
-import pgPubSub from '@src/app/config/pgPubSub'
+import { DateTimeISOResolver, UUIDResolver } from 'graphql-scalars'
+import typeDefs from './message.graphql'
 import messageService, {
   CreateMessageInput,
   MessageByIdInput,
   MessageByMemberIdInput,
   MessagesByChannelId,
-} from '@src/app/services/messageService'
-import GraphQLContext from '@src/app/types/GraphQLContext'
-import keysToCamelCase from '@src/app/utils/keysToCamelCase'
-import { DateTimeISOResolver, UUIDResolver } from 'graphql-scalars'
-import typeDefs from './message.graphql'
+} from '../../services/messageService'
+import GraphQLContext from '../../types/GraphQLContext'
+import keysToCamelCase from '../../utils/keysToCamelCase'
+import pgPubSub from '../../config/pgPubSub'
 
 export default makeExecutableSchema({
   typeDefs: typeDefs,

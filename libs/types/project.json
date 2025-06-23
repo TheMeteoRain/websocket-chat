@@ -3,22 +3,7 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "libs/types/src",
   "projectType": "library",
-  "targets": {
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "options": {
-        "lintFilePatterns": ["libs/types/**/*.ts"]
-      },
-      "outputs": ["{options.outputFile}"]
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/libs/types"],
-      "options": {
-        "jestConfig": "libs/types/jest.config.ts",
-        "passWithNoTests": true
-      }
-    }
-  },
-  "tags": ["application"]
+  "tags": [],
+  "// targets": "to see all targets run: nx show project types --web",
+  "targets": {}
 }

@@ -10,7 +10,7 @@ const toCamelCase = (
   text: string,
   index: number,
   delimiter: string,
-  recased: boolean = false
+  recased: boolean
 ): [string, boolean] => {
   if (text.length - 1 === index) return [text, false]
 
@@ -62,6 +62,7 @@ function keysToCamelCase<T>(obj: T): SnakeToCamel<T> | T {
     throw Error('Value must be of type Object!')
   }
 
+  // @ts-expect-error: TODO
   for (const [key, value] of Object.entries(obj)) {
     let newValue = value
 
@@ -72,9 +73,10 @@ function keysToCamelCase<T>(obj: T): SnakeToCamel<T> | T {
       newValue = keysToCamelCase(value)
     }
 
-    const [newKey, recased] = toCamelCase(key, 0, '_')
+    const [newKey, recased] = toCamelCase(key, 0, '_', false)
 
     // throw error if the expected newKey already exists
+    // @ts-expect-error: TODO
     if (recased && obj[newKey]) {
       console.error(
         `Renaming object field '${key}' to '${newKey}' but the field already exists`,
@@ -84,7 +86,9 @@ function keysToCamelCase<T>(obj: T): SnakeToCamel<T> | T {
         `Renaming object field '${key}' to '${newKey}' but the field already exists`
       )
     }
+    // @ts-expect-error: TODO
     delete obj[key]
+    // @ts-expect-error: TODO
     obj[newKey] = newValue
   }
 

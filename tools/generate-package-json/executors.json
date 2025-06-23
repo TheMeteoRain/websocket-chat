@@ -1,0 +1,9 @@
+{
+  "executors": {
+    "generate-package-json": {
+      "implementation": "./dist/executors/generate-package-json",
+      "schema": "./dist/executors/schema.json",
+      "description": "generate-package-json executor"
+    }
+  }
+}

@@ -1,27 +1,42 @@
-# Websocket-chat
+# Rally
 
-I hope future me will write something here :)
+A Real-Time WebSocket Chat Application.
 
-## Development
+## Prerequisites
 
-    pgcli -h 127.0.0.1 -p 6543 -u chat_user -d chat
+### [ASDF](https://asdf-vm.com/)
 
     brew install asdf
     asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
     asdf plugin-add pnpm
     asdf install
 
+Required software versions are listed in [.tool-versions](./.tool-versions). That are automatically installed when prompting `asdf install`.
 
+## Development
 
-    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+Start local database:
 
-    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up chat-database chat-database-migrate
+    docker compose -f docker-compose.yml -f docker-compose.local.yml up -d database
 
-    docker exec -it websocket-chat-chat-proxy-1 nginx -s reload
-    docker exec -it websocket-chat-chat-proxy-1 vim /etc/nginx/conf.d/default.conf
+Run migrations:
 
-### Docker
+    pnpm nx run migrate:migrate:up
+    pnpm nx run migrate:migrate:down:all
 
-Purge all things related to project's docker-compose
+Start server:
 
-    docker-compose down -v --rmi all --remove-orphans
+    pnpm nx run server:serve
+
+Start client:
+
+    pnpm nx run @rally/client:dev
+
+Start dockerized environment:
+
+    docker build -f Dockerfile -t rally-base .
+    docker compose -f docker-compose.yml -f docker-compose.local.yml up -d
+
+## ✍️ Commit Message Guidelines
+
+We follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for commit messages. This helps with readability, automated changelogs, and versioning.

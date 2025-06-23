@@ -1,7 +1,7 @@
-import express from 'express'
-import auth from '@src/app/services/auth'
+import express, { Router } from 'express'
+import auth from '../services/auth'
 
-const authRouter = express.Router()
+const authRouter: Router = express.Router()
 
 authRouter.use(express.json())
 authRouter.use(express.urlencoded({ extended: true }))

@@ -1,0 +1,25 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/client-e2e"
+    },
+    {
+      "path": "./apps/client"
+    },
+    {
+      "path": "./apps/server"
+    },
+    {
+      "path": "./libs/types"
+    },
+    {
+      "path": "./apps/migrate"
+    },
+    {
+      "path": "./tools/generate-package-json"
+    }
+  ]
+}

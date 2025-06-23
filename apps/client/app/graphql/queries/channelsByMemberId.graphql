@@ -1,0 +1,12 @@
+query ChannelsByMemberId($memberId: UUID!) {
+  channelsByMemberId(memberId: $memberId) {
+    id
+    createdAt
+    updatedAt
+    members {
+      id
+      firstName
+      lastName
+    }
+  }
+}

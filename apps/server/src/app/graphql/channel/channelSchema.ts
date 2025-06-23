@@ -1,10 +1,10 @@
 import { makeExecutableSchema } from '@graphql-tools/schema'
-import pgPubSub from '@src/app/config/pgPubSub'
-import channelService from '@src/app/services/channelService'
-import GraphQLContext from '@src/app/types/GraphQLContext'
-import keysToCamelCase from '@src/app/utils/keysToCamelCase'
 import { DateTimeISOResolver, UUIDResolver } from 'graphql-scalars'
 import typeDefs from './channel.graphql'
+import GraphQLContext from '../../types/GraphQLContext'
+import * as channelService from '../../services/channelService'
+import keysToCamelCase from '../../utils/keysToCamelCase'
+import pgPubSub from '../../config/pgPubSub'
 
 export default makeExecutableSchema({
   typeDefs,
@@ -50,6 +50,7 @@ export default makeExecutableSchema({
           return keysToCamelCase(source.subject)
         },
         subscribe: (source, args, context: GraphQLContext, info) => {
+          console.log(`graphql:user:${context.memberId}:channel`)
           return pgPubSub.asyncIterator(
             `graphql:user:${context.memberId}:channel`
           )

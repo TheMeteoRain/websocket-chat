@@ -1,5 +1,5 @@
-import pg from '@src/app/config/pg'
-import { Member } from '@libs/types/lib/models/db'
+import { Member } from '@rally/types/db'
+import pg from '../config/pg'
 
 export interface CurrentMemberInput {
   id: string

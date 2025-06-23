@@ -1,79 +1,56 @@
 {
-  "name": "client",
+  "name": "@rally/client",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "apps/client/src",
+  "sourceRoot": "apps/client/app",
   "projectType": "application",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project @rally/client --web",
   "targets": {
     "build": {
-      "executor": "@nx/webpack:webpack",
-      "outputs": ["{options.outputPath}"],
-      "options": {
-        "outputPath": "dist/apps/client",
-        "index": "apps/client/src/index.html",
-        "main": "apps/client/src/Main.tsx",
-        "polyfills": "apps/client/src/polyfills.ts",
-        "tsConfig": "apps/client/tsconfig.app.json",
-        "assets": ["apps/client/src/favicon.ico", "apps/client/src/assets"],
-        "generatePackageJson": true,
-        "styles": [],
-        "scripts": [],
-        "webpackConfig": "@nx/react/plugins/webpack"
-      },
-      "configurations": {
-        "production": {
-          "fileReplacements": [
-            {
-              "replace": "apps/client/src/environments/environment.ts",
-              "with": "apps/client/src/environments/environment.prod.ts"
-            }
-          ],
-          "optimization": true,
-          "outputHashing": "all",
-          "sourceMap": false,
-          "extractCss": true,
-          "namedChunks": false,
-          "extractLicenses": true,
-          "vendorChunk": false,
-          "budgets": [
-            {
-              "type": "initial",
-              "maximumWarning": "2mb",
-              "maximumError": "5mb"
-            }
-          ]
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "externalDependencies": ["@react-router/dev"]
         }
+      ],
+      "outputs": [
+        "{workspaceRoot}/apps/client/build/client",
+        "{workspaceRoot}/apps/client/build/server"
+      ],
+      "options": {
+        "cwd": "apps/client",
+        "command": "react-router build"
+      },
+      "syncGenerators": ["@nx/js:typescript-sync"],
+      "executor": "nx:run-commands",
+      "configurations": {
+        "development": {
+          "mode": "development"
+        },
+        "production": {
+          "mode": "production"
+        }
+      },
+      "parallelism": true
+    },
+    "generate-package-json": {
+      "executor": "@rally/generate-package-json:generate-package-json",
+      "options": {
+        "outputPath": "{workspaceRoot}/apps/client/build"
       }
     },
-    "serve": {
-      "executor": "@nx/webpack:dev-server",
+    "build-with-package-json": {
+      "executor": "nx:run-commands",
       "options": {
-        "buildTarget": "client:build"
-      },
-      "configurations": {
-        "production": {
-          "buildTarget": "client:build:production"
-        },
-        "development": {
-          "buildTarget": "client:build:development"
-        }
-      },
-      "defaultConfiguration": "development"
-    },
-    "lint": {
-      "executor": "@nx/linter:eslint",
-      "options": {
-        "lintFilePatterns": ["apps/client/**/*.{ts,tsx,js,jsx}"]
-      },
-      "outputs": ["{options.outputFile}"]
-    },
-    "test": {
-      "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/apps/client"],
-      "options": {
-        "jestConfig": "apps/client/jest.config.ts",
-        "passWithNoTests": true
+        "commands": [
+          "nx run @rally/client:build --tuiAutoExit",
+          "nx run @rally/generate-package-json:build",
+          "nx run @rally/client:generate-package-json"
+        ]
       }
     }
-  },
-  "tags": ["application"]
+  }
 }

@@ -1,12 +1,12 @@
 import { makeExecutableSchema } from '@graphql-tools/schema'
-import auth, { RegisteMemberInput } from '@src/app/services/auth'
+import { DateTimeISOResolver, UUIDResolver } from 'graphql-scalars'
+import typeDefs from './member.graphql'
 import memberService, {
   CurrentMemberInput,
   MembersByChannelIdInput,
-} from '@src/app/services/memberService'
-import GraphQLContext from '@src/app/types/GraphQLContext'
-import { DateTimeISOResolver, UUIDResolver } from 'graphql-scalars'
-import typeDefs from './member.graphql'
+} from '../../services/memberService'
+import GraphQLContext from '../../types/GraphQLContext'
+import auth, { RegisteMemberInput } from '../../services/auth'
 
 export default makeExecutableSchema({
   typeDefs,
@@ -51,6 +51,7 @@ export default makeExecutableSchema({
       currentMember: {
         resolve: async (source, args, context: GraphQLContext, info) => {
           const member = await memberService.currentMember({
+            // @ts-expect-error: TODO
             id: context.memberId,
           })
 
