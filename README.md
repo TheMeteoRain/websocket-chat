@@ -1,6 +1,6 @@
-# Websocket-chat
+# Rally
 
-I hope future me will write something here :)
+A Real-Time WebSocket Chat Application.
 
 ## Prerequisites
 
@@ -15,49 +15,28 @@ Required software versions are listed in [.tool-versions](./.tool-versions). Tha
 
 ## Development
 
-### Database
+Start local database:
 
-Run database in docker
+    docker compose -f docker-compose.yml -f docker-compose.local.yml up -d database
 
-    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up chat-database -d
+Run migrations:
 
-Run database migration
+    pnpm nx run migrate:migrate:up
+    pnpm nx run migrate:migrate:down:all
 
-    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up chat-database-migrate
+Start server:
 
-Run both
+    pnpm nx run server:serve
 
-    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up chat-database chat-database-migrate -d
+Start client:
 
-Connect to database
+    pnpm nx run @rally/client:dev
 
-    pgcli -h 127.0.0.1 -p 6543 -u chat_user -d chat
+Start dockerized environment:
 
-### Docker only
+    docker build -f Dockerfile -t rally-base .
+    docker compose -f docker-compose.yml -f docker-compose.local.yml up -d
 
-Setup
+## ✍️ Commit Message Guidelines
 
-    docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
-
-Config nginx in docker
-
-    docker exec -it websocket-chat-chat-proxy-1 vim /etc/nginx/conf.d/default.conf
-    docker exec -it websocket-chat-chat-proxy-1 nginx -s reload
-
-Purge all things related to project's docker-compose
-
-    docker-compose down -v --rmi all --remove-orphans
-
-### Basic commands
-
-Start (runs client and server, requires that database is already running)
-
-    pnpm start
-
-Apply latest database migrations
-
-    knex:latest
-
-Rollback all database migrations
-
-    knex:rollback
+We follow the [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/) specification for commit messages. This helps with readability, automated changelogs, and versioning.
